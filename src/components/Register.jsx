@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -10,7 +10,7 @@ const Register = () => {
     mobileNo: "",
     password: "",
   });
-
+ const Navigate = useNavigate()
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({
@@ -19,19 +19,18 @@ const Register = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    axios.post("/register",{
+   await axios.post("/server/api/v1/user/register",{
        email:formData.email,
        password:formData.password,
        fullname:formData.fullname,
        enrollmentNo:formData.enrollmentNo,
        mobileNo:formData.mobileNo
-    }).then(
-      console.log((Response)=>{
-        console.log(Response)
+    }).then((Response)=>{
+        Navigate(`/p/${Response.data.data.mobileNo}`)
       })
-    ).catch((error)=>{
+    .catch((error)=>{
       console.log(error)
     })
     setFormData({
@@ -56,7 +55,7 @@ const Register = () => {
             </label>
             <input
               type="tel"
-              name="phoneNo"
+              name="mobileNo"
               placeholder="Mobile Number"
               className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-orange-600"
               onChange={handleChange}

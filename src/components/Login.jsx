@@ -1,13 +1,13 @@
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import axios from "axios";
 const Login = () => {
   const [formData, setFormData] = useState({
     enrollmentNo: "",
-    phoneNo: "",
+    mobileNo: "",
     password: "",
   });
-
+  const Navigate = useNavigate()
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({
@@ -19,19 +19,18 @@ const Login = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     axios
-      .post("/api/v1/register", {
-        phoneNo: FormData.phoneNo,
+      .post("/server/api/v1/user/login", {
+        mobileNo: formData.mobileNo,
         enrollmentNo: formData.enrollmentNo,
         password: formData.password,
       })
       .then((res) => {
         console.log(res);
+        Navigate(`/`)
       })
       .catch((error) => console.log(error));
     // console.log(formData.email);
     setFormData({
-      email: "",
-      fullName: "",
       enrollmentNumber: "",
       mobileNumber: "",
       password: "",
@@ -51,11 +50,11 @@ const Login = () => {
             </label>
             <input
               type="text"
-              name="enrollmentNo"
+              name="mobileNo"
               placeholder="Enrollment Number & Mobile Number"
               className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-orange-600"
               onChange={handleChange}
-              value={formData.enrollmentNumber}
+              value={formData.mobileNo}
             />
           </div>
           <div className="mt-4">

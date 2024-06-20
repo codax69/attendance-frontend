@@ -7,3 +7,6 @@ body{
     background: #1a2c34;
     font-family: "Lato";
 }
+#render__scan_region img{
+    display: none;
+}

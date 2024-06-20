@@ -3,7 +3,7 @@ import { FaUserCircle } from "react-icons/fa";
 import { IoIosSearch } from "react-icons/io";
 import { MdHomeFilled } from "react-icons/md";
 import { MdCoPresent } from "react-icons/md";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import "../index.css";
 import axios from "axios";
@@ -14,6 +14,7 @@ const Navbar = () => {
   const [inputValue, setInputValue] = useState("");
   const [isMenuVisible, setIsMenuVisible] = useState(false);
 
+  const Navigate = useNavigate()
   const handleChanges = (e) => {
     setInputValue(e.target.value);
   };
@@ -25,13 +26,21 @@ const Navbar = () => {
   const searchStudent = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.get(`api/v1/${inputValue}`);
-      console.log(response.data);
+      const response = await axios.get(`/server/api/v1/user/p/${inputValue}`);
+       Navigate(`/p/${response.data.data.mobileNo}`)
     } catch (error) {
       console.error("Error fetching data: ", error);
     }
   };
-
+ const handleUserClick = async(e) =>{
+  e.preventDefault()
+        try {
+          const response = await axios.get("/server/api/v1/user/get-current-user")
+          Navigate(`/p/${response.data.data.user.mobileNo}`)
+        } catch (error) {
+          console.log(error)
+        }
+ }
   return (
     <>
       <nav className="relative max-w-[90rem] lg:mx-auto z-10">
@@ -68,7 +77,7 @@ const Navbar = () => {
                     <NavLink
                       className="pl-1 font-semibold"
                       onClick={handleClick}
-                      to="/"
+                      to="/attendance"
                     >
                       Attendance
                     </NavLink>
@@ -77,9 +86,9 @@ const Navbar = () => {
                 </ul>
               </div>
             )}
-            <h1 className="mx-1 lg:mx-4 text-lg lg:text-xl font-bold tracking-tighter lg:tracking-tight text-orange-400 select-none">
+            <NavLink to={"/"}><h1 className="mx-1 lg:mx-4 text-lg lg:text-xl font-bold tracking-tighter lg:tracking-tight text-orange-400 select-none">
               Attendance For ITI-Pardi
-            </h1>
+            </h1></NavLink>
           </div>
           <div className="flex justify-center w-auto ">
             <div className="flex items-center bg-white rounded-lg lg:px-2">
@@ -88,15 +97,17 @@ const Navbar = () => {
                 <input
                   className="text-black outline-none px-2 w-auto hidden lg:block "
                   type="text"
-                  name="search"
+                  name="mobileNo"
+                  placeholder="Enter your mobile No......"
                   id="search"
+
                   value={inputValue}
                   onChange={handleChanges}
                 />
               </form>
             </div>
             <Button className={"hover:bg-orange-500"} BtnName={"SignIn/LogIn"} url={"/register"} />
-            <NavLink to={"/p"}><FaUserCircle size={35} className="mx-4 fill-orange-400 hover:fill-orange-500 hover:cursor-pointer" /></NavLink>
+            <NavLink to={"/p/:mobileNo"} onClick={handleUserClick}> <FaUserCircle size={35} className="fill-orange-400 hover:fill-orange-500 hover:cursor-pointer" /></NavLink>
           </div>
         </div>
       </nav>
