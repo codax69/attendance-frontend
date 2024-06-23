@@ -106,7 +106,7 @@ const Navbar = () => {
                 />
               </form>
             </div>
-            <Button className={"hover:bg-orange-500"} BtnName={"SignIn/LogIn"} url={"/register"} />
+            <Button className={"hover:bg-orange-500"} BtnName={"SignIn/LogIn"} url={"/login"} />
             <NavLink to={"/p/:mobileNo"} onClick={handleUserClick}> <FaUserCircle size={35} className="fill-orange-400 hover:fill-orange-500 hover:cursor-pointer" /></NavLink>
           </div>
         </div>

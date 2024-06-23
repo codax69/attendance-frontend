@@ -2,53 +2,76 @@ import { Scanner, useDevices } from "@yudiel/react-qr-scanner";
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { NavLink } from "react-router-dom";
+import { format } from "date-fns";
 
 const Qr = () => {
-  const [QRData, setQRData] = useState({});
+  const [QRData, setQRData] = useState(null);
   const scannerRef = useRef(null);
-  const [selectedDeviceId, setSelectedDeviceId] = useState(""); // Changed from {} to ''
+  const [selectedDeviceId, setSelectedDeviceId] = useState("");
   const { devices } = useDevices();
-  const [SentData, setSentData] = useState({})
+  const [userData, setUserData] = useState(null);
+  const [location, setLocation] = useState({ latitude: null, longitude: null });
+  const [SentLocation, setSentLocation] = useState("");
 
-  const FetchDataFromDb = async () => {
-    try {
-      const response = await axios.get("server/api/v1/get-current-user");
-      const data = await response.data; 
-      setSentData(data);
-      console.log(data);
-      console.log(SentData);
-    } catch (error) {
-      console.error('Error fetching data:', error);
+  const getLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLocation({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          });
+        },
+        (err) => {
+          console.log(err.message);
+        }
+      );
+    } else {
+      console.log("Geolocation is not supported by this browser.");
     }
   };
- 
+  console.log(location);
+  const findLocation = async (lat, long) => {
+    try {
+      const response = await axios.get(
+        `http://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${long}&appid=0f492d8e7f8e31edf74af91dd4faac3c`
+      );
+      const resLocation = await response.data[0].name;
+      setSentLocation(resLocation);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    if (location) {
+      findLocation(location.latitude, location.longitude);
+    }
+  }, [location]);
+
   useEffect(() => {
     if (devices && devices.length > 0) {
       setSelectedDeviceId(devices[0].deviceId);
     }
   }, [devices]);
 
-  const handleScan = async (result) => {
-    if (result) {
-      setQRData(result[0]);
-      console.log(result[0]);
-      stopScanner();
-      // sentDataToSheet()
-      FetchDataFromDb()
-      try {
-      const data =  await axios.get("server/api/v1/get-current-user");
-      console.log(data)
-      setSentData(data)
+  const FetchDataFromDb = async () => {
+    try {
+      const response = await axios.get("/server/api/v1/user/get-current-user");
+      const data = response.data.data.user;
+      setUserData(data);
     } catch (error) {
-        console.error("Error fetching current user:", error);
-    } 
-    } else {
-      console.log("No result found");
+      console.error("Error fetching data:", error);
     }
   };
 
-  const handleError = (error) => {
-    console.error(error);
+  const handleScan = async (result) => {
+    if (result && result.length > 0) {
+      setQRData(result[0].rawValue);
+      await FetchDataFromDb();
+      stopScanner();
+    } else {
+      console.log("No result found");
+    }
   };
 
   const stopScanner = () => {
@@ -59,6 +82,51 @@ const Qr = () => {
       }
     }
   };
+  const date = new Date();
+  let formattedDate = format(date, "dd/MM/yyyy");
+
+  let formattedTime = date.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    hour12: true,
+    minute: "numeric",
+  });
+
+  const FetchDataFormSheet = async () => {
+    try {
+      const formData = new FormData();
+      formData.append("FULL_NAME", userData.fullname);
+      formData.append("ENROLLMENT_NUMBER", userData.enrollmentNo);
+      formData.append(`${formattedDate}`, "PRESENT");
+      formData.append("LOCATION", SentLocation);
+      formData.append("QR_DATA", QRData);
+      formData.append("TIME", formattedTime);
+
+      const response = await fetch(
+        "/sheet/macros/s/AKfycbzmbZF0NRjexSfYJRrtn1YrdOf1pgZroVArejkeXptBwazxvwrdqLYtSY4WzeSUn6pz/exec",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const responseBody = await response.text();
+      console.log("Response from Google Sheets:", responseBody);
+    } catch (error) {
+      console.error("Error sending data to Google Sheets:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (userData && QRData) {
+      getLocation();
+    }
+  }, [userData, QRData]);
+
+  useEffect(() => {
+    if (SentLocation) {
+      FetchDataFormSheet();
+    }
+  }, [SentLocation]);
 
   return (
     <>
@@ -78,7 +146,7 @@ const Qr = () => {
         <Scanner
           ref={scannerRef}
           onScan={handleScan}
-          onError={handleError}
+          onError={console.error}
           constraints={{
             deviceId: selectedDeviceId
               ? { exact: selectedDeviceId }
@@ -86,8 +154,9 @@ const Qr = () => {
           }}
         />
       </div>
-      <div>{QRData ? <h1 className="text-center text-white">{QRData.rawValue}</h1> : null}</div>
-
+      <div>
+        {QRData ? <h1 className="text-center text-white">{QRData}</h1> : null}
+      </div>
       <div className="flex items-center justify-center mt-10">
         <NavLink to="/daily-attendance">
           <button className="px-6 py-2 mt-4 text-white bg-orange-400 rounded-lg hover:bg-orange-500 shadow hover:shadow-lg font-medium transition transform hover:-translate-y-0.5">
