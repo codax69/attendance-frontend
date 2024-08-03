@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/server': {
+      '/api': {
         target: 'https://attendance-app-production-ec33.up.railway.app',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/server/, ''),

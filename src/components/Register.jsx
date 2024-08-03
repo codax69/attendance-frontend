@@ -21,7 +21,7 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-   await axios.post("/server/api/v1/user/register",{
+   await axios.post("/api/api/v1/user/register",{
        email:formData.email,
        password:formData.password,
        fullname:formData.fullname,

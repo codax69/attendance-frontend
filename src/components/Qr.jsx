@@ -56,7 +56,7 @@ const Qr = () => {
 
   const FetchDataFromDb = async () => {
     try {
-      const response = await axios.get("/server/api/v1/user/get-current-user");
+      const response = await axios.get("/api/api/v1/user/get-current-user");
       const data = response.data.data.user;
       setUserData(data);
     } catch (error) {
