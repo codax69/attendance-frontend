@@ -5,10 +5,10 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/api': {
+      '/att': {
         target: 'https://attendance-app-production-ec33.up.railway.app',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/server/, ''),
+        rewrite: (path) => path.replace(/^\/att/, ''),
       },
       '/sheet': {
         target: 'https://script.google.com',

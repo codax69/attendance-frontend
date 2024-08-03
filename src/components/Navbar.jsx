@@ -26,7 +26,7 @@ const Navbar = () => {
   const searchStudent = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.get(`/api/api/v1/user/p/${inputValue}`);
+      const response = await axios.get(`/att/api/v1/user/p/${inputValue}`);
        Navigate(`/p/${response.data.data.mobileNo}`)
     } catch (error) {
       console.error("Error fetching data: ", error);
@@ -35,7 +35,7 @@ const Navbar = () => {
  const handleUserClick = async(e) =>{
   e.preventDefault()
         try {
-          const response = await axios.get("/api/api/v1/user/get-current-user")
+          const response = await axios.get("/att/api/v1/user/get-current-user")
           Navigate(`/p/${response.data.data.user.mobileNo}`)
         } catch (error) {
           console.log(error)
