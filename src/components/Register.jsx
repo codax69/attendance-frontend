@@ -27,8 +27,8 @@ const Register = () => {
        fullname:formData.fullname,
        enrollmentNo:formData.enrollmentNo,
        mobileNo:formData.mobileNo
-    }).then((Response)=>{
-        Navigate(`/p/${Response.data.data.mobileNo}`)
+    }).then(()=>{
+        Navigate(`/login`)
       })
     .catch((error)=>{
       console.log(error)

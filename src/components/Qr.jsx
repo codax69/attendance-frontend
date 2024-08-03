@@ -30,7 +30,7 @@ const Qr = () => {
       console.log("Geolocation is not supported by this browser.");
     }
   };
-  console.log(location);
+  
   const findLocation = async (lat, long) => {
     try {
       const response = await axios.get(
@@ -84,7 +84,6 @@ const Qr = () => {
   };
   const date = new Date();
   let formattedDate = format(date, "dd/MM/yyyy");
-
   let formattedTime = date.toLocaleTimeString("en-US", {
     hour: "numeric",
     hour12: true,
@@ -100,22 +99,26 @@ const Qr = () => {
       formData.append("LOCATION", SentLocation);
       formData.append("QR_DATA", QRData);
       formData.append("TIME", formattedTime);
-
+  
       const response = await fetch(
-        "/sheet/macros/s/AKfycbzmbZF0NRjexSfYJRrtn1YrdOf1pgZroVArejkeXptBwazxvwrdqLYtSY4WzeSUn6pz/exec",
+        "/sheet/macros/s/AKfycbw5rUxDU8RFUTo2tYQLr-l9iyBPTuS9DAoSx7q8SonmMRyb8tGD9TnuUBuErEBRkRoi/exec",
         {
           method: "POST",
           body: formData,
         }
       );
-
-      const responseBody = await response.text();
-      console.log("Response from Google Sheets:", responseBody);
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      const responseBody = await response.json();
+      console.log("Response from Google Sheets:", responseBody)
     } catch (error) {
       console.error("Error sending data to Google Sheets:", error);
     }
   };
-
+  
   useEffect(() => {
     if (userData && QRData) {
       getLocation();

@@ -6,7 +6,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/server': {
-        target: 'http://localhost:3000',
+        target: 'https://attendance-app-production-ec33.up.railway.app',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/server/, ''),
       },

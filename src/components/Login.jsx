@@ -24,8 +24,7 @@ const Login = () => {
         enrollmentNo: formData.enrollmentNo,
         password: formData.password,
       })
-      .then((res) => {
-        console.log(res);
+      .then(() => {
         Navigate(`/`)
       })
       .catch((error) => console.log(error));
