@@ -9,7 +9,7 @@ const Home = () => {
 
   const fetchUserData = async () => {
     try {
-      const response = await axios.get("https://attendance-app-production-ec33.up.railway.app/api/v1/user/get-current-user");
+      const response = await axios.get("/server/api/v1/user/get-current-user");
       setUserData(response.data.data.user);
     } catch (error) {
       console.log(error.message);

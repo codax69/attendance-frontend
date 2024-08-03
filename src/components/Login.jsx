@@ -19,7 +19,7 @@ const Login = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     axios
-      .post("https://attendance-app-production-ec33.up.railway.app/api/v1/user/login", {
+      .post("/server/api/v1/user/login", {
         mobileNo: formData.mobileNo,
         enrollmentNo: formData.enrollmentNo,
         password: formData.password,
