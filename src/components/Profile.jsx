@@ -10,7 +10,7 @@ const Profile = () => {
   
   const fetchUserData = async () => {
     try {
-    const response =  await axios.get(`/att/api/v1/user/p/${mobileNo}`);
+    const response =  await axios.get(`https://attendance-app-production-ec33.up.railway.app/api/v1/user/p/${mobileNo}`);
       setUserData(response.data.data)
     } catch (error) {
       setError(error);

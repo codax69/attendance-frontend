@@ -19,12 +19,13 @@ const Login = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     axios
-      .post("/att/api/v1/user/login", {
+      .post("https://attendance-app-production-ec33.up.railway.app/api/v1/user/login", {
         mobileNo: formData.mobileNo,
         enrollmentNo: formData.enrollmentNo,
         password: formData.password,
       })
-      .then(() => {
+      .then((res) => {
+        console.log(res)
         Navigate(`/`)
       })
       .catch((error) => console.log(error));
