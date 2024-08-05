@@ -5,15 +5,15 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/server': {
+      '/api': {
         target: 'https://attendance-app-t0x1.onrender.com/',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/server/, ''),
+        rewrite: (path) => path.replace(/^\/api/, '/api'),
       },
-      '/sheet': {
+      '/macros': {
         target: 'https://script.google.com/',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/sheet/, ''),
+        rewrite: (path) => path.replace(/^\/macros/, '/macros'),
       },
     },
   },

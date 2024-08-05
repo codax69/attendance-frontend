@@ -56,7 +56,7 @@ const Qr = () => {
 
   const FetchDataFromDb = async () => {
     try {
-      const response = await axios.get("/server/api/v1/user/get-current-user");
+      const response = await axios.get("/api/v1/user/get-current-user");
       const data = response.data.data.user;
       setUserData(data);
     } catch (error) {
@@ -101,7 +101,7 @@ const Qr = () => {
       formData.append("TIME", formattedTime);
   
       const response = await fetch(
-        "/sheet/macros/s/AKfycbw5rUxDU8RFUTo2tYQLr-l9iyBPTuS9DAoSx7q8SonmMRyb8tGD9TnuUBuErEBRkRoi/exec",
+        "/macros/s/AKfycbw5rUxDU8RFUTo2tYQLr-l9iyBPTuS9DAoSx7q8SonmMRyb8tGD9TnuUBuErEBRkRoi/exec",
         {
           method: "POST",
           body: formData,

@@ -21,7 +21,7 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-   await axios.post("https://attendance-app-production-ec33.up.railway.app/api/v1/user/register",{
+   await axios.post("/api/v1/user/register",{
        email:formData.email,
        password:formData.password,
        fullname:formData.fullname,
