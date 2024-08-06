@@ -119,17 +119,17 @@ const Qr = () => {
     }
   };
   
-  useEffect(() => {
-    if (userData && QRData) {
-      getLocation();
-    }
-  }, [userData, QRData]);
+  // useEffect(() => {
+  //   if (userData && QRData) {
+  //     getLocation();
+  //   }
+  // }, [userData, QRData]);
 
   useEffect(() => {
-    if (SentLocation) {
+    if (FetchDataFromDb) {
       FetchDataFormSheet();
     }
-  }, [SentLocation]);
+  }, [FetchDataFromDb]);
 
   return (
     <>
