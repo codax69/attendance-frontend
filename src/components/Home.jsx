@@ -23,8 +23,8 @@ const Home = () => {
   return (
     <>
       <div className="h-auto">
-        <div className="max-w-7xl mx-auto">
-          <div className="w-1/2 p-6 h-72 overflow-hidden mx-auto mt-6 bg-white rounded-xl shadow-sm shadow-black text-center">
+        <div className="lg:max-w-7xl mx-auto mt-16 lg:mt-0">
+          <div className="lg:w-1/2 w-4/5 p-6 h-72 overflow-hidden mx-auto mt-6 bg-white rounded-xl shadow-sm shadow-black text-center">
             <h1 className="text-lg font-semibold ">
               Hello,{UserData.fullname || "User"}
             </h1>
@@ -46,7 +46,7 @@ const Home = () => {
               </NavLink>
             </div>
           </div>
-          <div className="w-1/2 h-80 overflow-hidden mx-auto mt-6 bg-white rounded-xl shadow-sm shadow-black p-4">
+          <div className="lg:w-1/2 w-4/5 lg:h-80 h-[22rem] overflow-scroll lg:overflow-hidden mx-auto mt-6 bg-white rounded-xl shadow-sm shadow-black p-4">
             <h1 className="text-lg">Dear,{UserData.fullname || "User"}</h1>
             <p className="text-lg">Your important Attendance related Info:</p>
             <div className="flex flex-col">

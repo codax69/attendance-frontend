@@ -26,7 +26,7 @@ const Navbar = () => {
   const searchStudent = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.get(`/api/v1/user/p/${inputValue}`);
+      const response = await axios.get(`/api/api/v1/user/p/${inputValue}`);
        Navigate(`/p/${response.data.data.mobileNo}`)
     } catch (error) {
       console.error("Error fetching data: ", error);
@@ -43,7 +43,7 @@ const Navbar = () => {
  }
   return (
     <>
-      <nav className="relative max-w-[90rem] lg:mx-auto z-10">
+      <nav className="relative max-w-[90rem] lg:mx-auto z-10 px-4">
         <div className="flex text-white justify-between mt-2 items-center">
           <div className="flex items-center">
             <GiHamburgerMenu size={35} onClick={handleClick} className="hover:cursor-pointer" />
@@ -66,7 +66,7 @@ const Navbar = () => {
                     <NavLink
                       className="pl-1 font-semibold"
                       onClick={handleClick}
-                      to="/button"
+                      to="/"
                     >
                       About
                     </NavLink>
@@ -86,12 +86,12 @@ const Navbar = () => {
                 </ul>
               </div>
             )}
-            <NavLink to={"/"}><h1 className="mx-1 lg:mx-4 text-lg lg:text-xl font-bold tracking-tighter lg:tracking-tight text-orange-400 select-none">
+            <NavLink to={"/"}><h1 className="mx-4 lg:mx-4 text-lg lg:text-xl font-bold tracking-tighter lg:tracking-tight text-orange-400 select-none">
               Attendance For ITI-Pardi
             </h1></NavLink>
           </div>
           <div className="flex justify-center w-auto ">
-            <div className="flex items-center bg-white rounded-lg lg:px-2">
+            <div className="items-center bg-white rounded-lg lg:px-2 hidden lg:flex">
               <IoIosSearch size={25} fill="black" />
               <form onSubmit={searchStudent} className="">
                 <input

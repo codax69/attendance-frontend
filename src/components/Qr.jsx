@@ -133,7 +133,7 @@ const Qr = () => {
 
   return (
     <>
-      <div className="w-80 h-80 mx-auto my-10">
+      <div className="w-80 h-80 mx-auto my-10 mt-24">
         {devices && (
           <select
             onChange={(e) => setSelectedDeviceId(e.target.value)}
