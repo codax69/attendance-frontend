@@ -13,6 +13,10 @@ export default defineConfig({
         target: 'https://script.google.com/',
         changeOrigin: true,
       },
+      '/geo': {
+        target: 'http://api.openweathermap.org/',
+        changeOrigin: true,
+      },
     },
   },
 });
