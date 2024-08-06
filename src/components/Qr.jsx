@@ -10,43 +10,43 @@ const Qr = () => {
   const [selectedDeviceId, setSelectedDeviceId] = useState("");
   const { devices } = useDevices();
   const [userData, setUserData] = useState(null);
-  const [location, setLocation] = useState({ latitude: null, longitude: null });
-  const [SentLocation, setSentLocation] = useState("");
+  // const [location, setLocation] = useState({ latitude: null, longitude: null });
+  // const [SentLocation, setSentLocation] = useState("");
 
-  const getLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLocation({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-          });
-        },
-        (err) => {
-          console.log(err.message);
-        }
-      );
-    } else {
-      console.log("Geolocation is not supported by this browser.");
-    }
-  };
+  // const getLocation = () => {
+  //   if (navigator.geolocation) {
+  //     navigator.geolocation.getCurrentPosition(
+  //       (position) => {
+  //         setLocation({
+  //           latitude: position.coords.latitude,
+  //           longitude: position.coords.longitude,
+  //         });
+  //       },
+  //       (err) => {
+  //         console.log(err.message);
+  //       }
+  //     );
+  //   } else {
+  //     console.log("Geolocation is not supported by this browser.");
+  //   }
+  // };
   
-  const findLocation = async (lat, long) => {
-    try {
-      const response = await axios.get(
-        `/geo/geo/1.0/reverse?lat=${lat}&lon=${long}&appid=0f492d8e7f8e31edf74af91dd4faac3c`
-      );
-      const resLocation = await response.data[0].name;
-      setSentLocation(resLocation);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  useEffect(() => {
-    if (location) {
-      findLocation(location.latitude, location.longitude);
-    }
-  }, [location]);
+  // const findLocation = async (lat, long) => {
+  //   try {
+  //     const response = await axios.get(
+  //       `/geo/geo/1.0/reverse?lat=${lat}&lon=${long}&appid=0f492d8e7f8e31edf74af91dd4faac3c`
+  //     );
+  //     const resLocation = await response.data[0].name;
+  //     setSentLocation(resLocation);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+  // useEffect(() => {
+  //   if (location) {
+  //     findLocation(location.latitude, location.longitude);
+  //   }
+  // }, [location]);
 
   useEffect(() => {
     if (devices && devices.length > 0) {
@@ -96,7 +96,7 @@ const Qr = () => {
       formData.append("FULL_NAME", userData.fullname);
       formData.append("ENROLLMENT_NUMBER", userData.enrollmentNo);
       formData.append(`${formattedDate}`, "PRESENT");
-      formData.append("LOCATION", SentLocation);
+      // formData.append("LOCATION", SentLocation);
       formData.append("QR_DATA", QRData);
       formData.append("TIME", formattedTime);
   
