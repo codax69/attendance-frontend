@@ -34,7 +34,7 @@ const Qr = () => {
   const findLocation = async (lat, long) => {
     try {
       const response = await axios.get(
-        `/geo/1.0/reverse?lat=${lat}&lon=${long}&appid=0f492d8e7f8e31edf74af91dd4faac3c`
+        `/geo/geo/1.0/reverse?lat=${lat}&lon=${long}&appid=0f492d8e7f8e31edf74af91dd4faac3c`
       );
       const resLocation = await response.data[0].name;
       setSentLocation(resLocation);
