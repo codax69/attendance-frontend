@@ -8,12 +8,10 @@ export default defineConfig({
       '/api': {
         target: 'https://attendance-app-t0x1.onrender.com/',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
       },
       '/macros': {
         target: 'https://script.google.com/',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/macros/, ''),
       },
     },
   },
