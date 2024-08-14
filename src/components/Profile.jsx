@@ -21,6 +21,7 @@ const Profile = () => {
     if (mobileNo) {
       fetchUserData();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[mobileNo]);
   if (error) {
     return <div>Error: {error.message}</div>;

@@ -30,7 +30,7 @@ const Qr = () => {
   //     console.log("Geolocation is not supported by this browser.");
   //   }
   // };
-  
+
   // const findLocation = async (lat, long) => {
   //   try {
   //     const response = await axios.get(
@@ -59,6 +59,7 @@ const Qr = () => {
       const response = await axios.get("/api/api/v1/user/get-current-user");
       const data = response.data.data.user;
       setUserData(data);
+      console.log(userData);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -99,7 +100,7 @@ const Qr = () => {
       // formData.append("LOCATION", SentLocation);
       formData.append("QR_DATA", QRData);
       formData.append("TIME", formattedTime);
-  
+
       const response = await fetch(
         "/macros/macros/s/AKfycbw5rUxDU8RFUTo2tYQLr-l9iyBPTuS9DAoSx7q8SonmMRyb8tGD9TnuUBuErEBRkRoi/exec",
         {
@@ -107,18 +108,18 @@ const Qr = () => {
           body: formData,
         }
       );
-  
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-  
+
       const responseBody = await response.json();
-      console.log("Response from Google Sheets:", responseBody)
+      console.log("Response from Google Sheets:", responseBody);
     } catch (error) {
       console.error("Error sending data to Google Sheets:", error);
     }
   };
-  
+
   // useEffect(() => {
   //   if (userData && QRData) {
   //     getLocation();
@@ -130,7 +131,6 @@ const Qr = () => {
       FetchDataFormSheet();
     }
   }, [FetchDataFromDb]);
-
   return (
     <>
       <div className="w-80 h-80 mx-auto my-10 mt-24">
@@ -158,8 +158,13 @@ const Qr = () => {
         />
       </div>
       <div>
-        {QRData ? <h1 className="text-center text-white">{QRData}</h1> : null}
+        {QRData && (
+          <h1 className="text-center text-white">
+             Your Attendance is Registered
+          </h1>
+        )}
       </div>
+
       <div className="flex items-center justify-center mt-10">
         <NavLink to="/daily-attendance">
           <button className="px-6 py-2 mt-4 text-white bg-orange-400 rounded-lg hover:bg-orange-500 shadow hover:shadow-lg font-medium transition transform hover:-translate-y-0.5">
