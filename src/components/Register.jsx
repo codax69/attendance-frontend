@@ -9,6 +9,7 @@ const Register = () => {
     enrollmentNo: "",
     mobileNo: "",
     password: "",
+    age:""
   });
  const Navigate = useNavigate()
   const handleChange = (e) => {
@@ -26,7 +27,8 @@ const Register = () => {
        password:formData.password,
        fullname:formData.fullname,
        enrollmentNo:formData.enrollmentNo,
-       mobileNo:formData.mobileNo
+       mobileNo:formData.mobileNo,
+       age:formData.age
     }).then(()=>{
         Navigate(`/login`)
       })
@@ -101,6 +103,20 @@ const Register = () => {
               value={formData.enrollmentNumber}
             />
           </div>
+          <div className="mt-4">
+            <label className="block" htmlFor="Age">
+               Age
+            </label>
+            <input
+              type="text"
+              name="age"
+              placeholder="Age"
+              className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-orange-600"
+              onChange={handleChange}
+              value={formData.age}
+            />
+          </div>
+          
           <div className="mt-4">
             <label className="block" htmlFor="password">
               Password

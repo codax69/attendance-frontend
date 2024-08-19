@@ -102,7 +102,7 @@ const Qr = () => {
       formData.append("TIME", formattedTime);
 
       const response = await fetch(
-        "/macros/macros/s/AKfycbw5rUxDU8RFUTo2tYQLr-l9iyBPTuS9DAoSx7q8SonmMRyb8tGD9TnuUBuErEBRkRoi/exec",
+        "/macros/macros/s/AKfycbx04Yc5kU6elgzGDSIwvJY0bM-lItIZU9_PJatJpYyMOaGlDtviW_LUpiKzRLMzASHh/exec",
         {
           method: "POST",
           body: formData,

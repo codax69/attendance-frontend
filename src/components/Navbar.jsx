@@ -9,12 +9,14 @@ import "../index.css";
 import axios from "axios";
 import { IoInformationCircle } from "react-icons/io5";
 import Button from "./Button.jsx";
+import { AuthContext } from "../context/AuthContext.jsx";
+import { useContext } from "react";
 
 const Navbar = () => {
   const [inputValue, setInputValue] = useState("");
   const [isMenuVisible, setIsMenuVisible] = useState(false);
-
-  const Navigate = useNavigate()
+  const Navigate = useNavigate();
+  const {isLoggedIn,setIsLoggedIn} = useContext(AuthContext)
   const handleChanges = (e) => {
     setInputValue(e.target.value);
   };
@@ -27,26 +29,40 @@ const Navbar = () => {
     e.preventDefault();
     try {
       const response = await axios.get(`/api/api/v1/user/p/${inputValue}`);
-       Navigate(`/p/${response.data.data.mobileNo}`)
+      Navigate(`/p/${response.data.data.mobileNo}`);
     } catch (error) {
       console.error("Error fetching data: ", error);
     }
   };
- const handleUserClick = async(e) =>{
-  e.preventDefault()
-        try {
-          const response = await axios.get("/api/api/v1/user/get-current-user")
-          Navigate(`/p/${response.data.data.user.mobileNo}`)
-        } catch (error) {
-          console.log(error)
-        }
- }
+  const handleUserClick = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.get("/api/api/v1/user/get-current-user");
+      Navigate(`/p/${response.data.data.user.mobileNo}`);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleLogOut = async () => {
+    try {
+      const response = await axios.get("/api/api/v1/user/logout");
+      setIsLoggedIn(!isLoggedIn)
+    } catch (error) {
+      console.error("Logout failed", error);
+    }
+  };
+  
+  
   return (
     <>
       <nav className="relative max-w-[90rem] lg:mx-auto z-10 px-4">
         <div className="flex text-white justify-between mt-2 items-center">
           <div className="flex items-center">
-            <GiHamburgerMenu size={35} onClick={handleClick} className="hover:cursor-pointer" />
+            <GiHamburgerMenu
+              size={35}
+              onClick={handleClick}
+              className="hover:cursor-pointer"
+            />
             {isMenuVisible && (
               <div className="absolute top-10 bg-orange-400/35 backdrop-blur-xl h-auto w-64 rounded-lg">
                 <ul className="flex px-10 flex-col py-10">
@@ -86,9 +102,11 @@ const Navbar = () => {
                 </ul>
               </div>
             )}
-            <NavLink to={"/"}><h1 className="mx-4 lg:mx-4 text-lg lg:text-xl font-bold tracking-tighter lg:tracking-tight text-orange-400 select-none">
-              Attendance For ITI-Pardi
-            </h1></NavLink>
+            <NavLink to={"/"}>
+              <h1 className="mx-4 lg:mx-4 text-lg lg:text-xl font-bold tracking-tighter lg:tracking-tight text-orange-400 select-none">
+                Attendance For ITI-Pardi
+              </h1>
+            </NavLink>
           </div>
           <div className="flex justify-center w-auto ">
             <div className="items-center bg-white rounded-lg lg:px-2 hidden lg:flex">
@@ -100,14 +118,26 @@ const Navbar = () => {
                   name="mobileNo"
                   placeholder="Enter your mobile No......"
                   id="search"
-
                   value={inputValue}
                   onChange={handleChanges}
                 />
               </form>
             </div>
-            <Button className={"hover:bg-orange-500"} BtnName={"SignIn/LogIn"} url={"/login"} />
-            <NavLink to={"/p/:mobileNo"} onClick={handleUserClick}> <FaUserCircle size={35} className="fill-orange-400 hover:fill-orange-500 hover:cursor-pointer" /></NavLink>
+            <Button
+            btnClass={isLoggedIn ?  "hidden":""}
+              className={"hover:bg-orange-500"}
+              BtnName={ "Signin/Login"}
+              url={"/login"}
+            />
+            
+            <button className={!isLoggedIn ?  "hidden":"mx-4 px-2 py-1 rounded-lg backdrop-blur-lg bg-orange-400 hover:bg-orange-500 shadow hover:shadow-lg font-medium transition transform hover:-translate-y-0.5"}  onClick={handleLogOut}>Logout</button>
+            <NavLink to={"/p/:mobileNo"} onClick={handleUserClick}>
+              {" "}
+              <FaUserCircle
+                size={35}
+                className="fill-orange-400 hover:fill-orange-500 hover:cursor-pointer"
+              />
+            </NavLink>
           </div>
         </div>
       </nav>

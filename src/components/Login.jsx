@@ -1,13 +1,16 @@
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
+import { useContext } from "react";
 import axios from "axios";
 const Login = () => {
+  const { setIsLoggedIn } = useContext(AuthContext);
   const [formData, setFormData] = useState({
     enrollmentNo: "",
     mobileNo: "",
     password: "",
   });
-  const Navigate = useNavigate()
+  const Navigate = useNavigate();
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({
@@ -24,9 +27,12 @@ const Login = () => {
         enrollmentNo: formData.enrollmentNo,
         password: formData.password,
       })
-      .then((res) => {
-        console.log(res)
-        Navigate(`/`)
+      .then((response) => {
+        const loggedIn = response.data.data.loggedInUser.isLoggedIn;
+        if (loggedIn) {
+          setIsLoggedIn(loggedIn)
+          Navigate(`/`);
+        }
       })
       .catch((error) => console.log(error));
     // console.log(formData.email);
@@ -45,13 +51,12 @@ const Login = () => {
         </h3>
         <form onSubmit={handleSubmit}>
           <div className="mt-4">
-            <label className="block" htmlFor="enrollmentNumber">
-              Enrollment Number & Mobile Number
+            <label className="block" htmlFor="enrollmentNumber">Mobile Number
             </label>
             <input
               type="text"
               name="mobileNo"
-              placeholder="Enrollment Number & Mobile Number"
+              placeholder="Mobile Number"
               className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-orange-600"
               onChange={handleChange}
               value={formData.mobileNo}
@@ -79,7 +84,7 @@ const Login = () => {
             </button>
           </div>
           <p className="text-center pt-2 ">
-          If you don’t have an account?.
+            If you don’t have an account?.
             <NavLink
               className={`text-orange-400 underline hover:text-orange-500`}
               to={"/register"}

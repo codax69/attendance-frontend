@@ -74,7 +74,7 @@ const Profile = () => {
           <div className="mt-20 text-center pb-12">
             <h1 className="text-4xl font-medium text-gray-700">
               {userData.fullname},
-              <span className="font-light text-gray-500">27</span>
+              <span className="font-light text-gray-500">{userData.age}</span>
             </h1>
             <p className="font-light text-gray-600 mt-3">{userData.mobileNo}</p>
             <p className="mt-8 text-gray-500">
