@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { useContext } from "react";
@@ -30,7 +30,7 @@ const Login = () => {
       .then((response) => {
         const loggedIn = response.data.data.loggedInUser.isLoggedIn;
         if (loggedIn) {
-          setIsLoggedIn(loggedIn)
+          setIsLoggedIn(loggedIn);
           Navigate(`/`);
         }
       })
@@ -42,6 +42,19 @@ const Login = () => {
       password: "",
     });
   };
+  const checkLoggedIn = async () => {
+    await axios
+      .get("api/api/v1/user/get-current-user")
+      .then((res) => {
+        setIsLoggedIn(res.data.data.user.isLoggedIn);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  useEffect(() => {
+    checkLoggedIn();
+  }, []);
 
   return (
     <div className="flex items-center justify-center z-0">
@@ -51,7 +64,8 @@ const Login = () => {
         </h3>
         <form onSubmit={handleSubmit}>
           <div className="mt-4">
-            <label className="block" htmlFor="enrollmentNumber">Mobile Number
+            <label className="block" htmlFor="enrollmentNumber">
+              Mobile Number
             </label>
             <input
               type="text"
