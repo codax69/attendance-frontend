@@ -1,8 +1,9 @@
 import { Scanner, useDevices } from "@yudiel/react-qr-scanner";
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { format } from "date-fns";
+import { toast } from "react-toastify";
 
 const Qr = () => {
   const [QRData, setQRData] = useState(null);
@@ -10,6 +11,7 @@ const Qr = () => {
   const [selectedDeviceId, setSelectedDeviceId] = useState("");
   const { devices } = useDevices();
   const [userData, setUserData] = useState(null);
+  const Navigate = useNavigate()
   // const [location, setLocation] = useState({ latitude: null, longitude: null });
   // const [SentLocation, setSentLocation] = useState("");
 
@@ -100,7 +102,7 @@ const Qr = () => {
       // formData.append("LOCATION", SentLocation);
       formData.append("QR_DATA", QRData);
       formData.append("TIME", formattedTime);
-
+       console.log(userData)
       const response = await fetch(
         "/macros/macros/s/AKfycbw5rUxDU8RFUTo2tYQLr-l9iyBPTuS9DAoSx7q8SonmMRyb8tGD9TnuUBuErEBRkRoi/exec",
         {
@@ -108,15 +110,17 @@ const Qr = () => {
           body: formData,
         }
       );
-
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-
+      
       const responseBody = await response.json();
       console.log("Response from Google Sheets:", responseBody);
+       Navigate("/")
+       toast.success("Your Attendance is Registered.")
     } catch (error) {
       console.error("Error sending data to Google Sheets:", error);
+      toast.error("Something Want Wrong During Registered Attendance..!")
     }
   };
 
@@ -131,6 +135,7 @@ const Qr = () => {
       FetchDataFormSheet();
     }
   }, [FetchDataFromDb]);
+  
   return (
     <>
       <div className="w-80 h-80 mx-auto my-10 mt-24">

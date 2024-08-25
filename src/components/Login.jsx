@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { useContext } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
 const Login = () => {
   const { setIsLoggedIn } = useContext(AuthContext);
   const [formData, setFormData] = useState({
@@ -10,6 +11,9 @@ const Login = () => {
     mobileNo: "",
     password: "",
   });
+  const handleLoginButton = () => {
+    console.log("first");
+  };
   const Navigate = useNavigate();
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -31,10 +35,16 @@ const Login = () => {
         const loggedIn = response.data.data.loggedInUser.isLoggedIn;
         if (loggedIn) {
           setIsLoggedIn(loggedIn);
-          Navigate(`/`);
+          Navigate("/");
+          toast.success("Login successfully");
         }
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        console.log(error);
+        toast.error("Check Your Mobile Number and Password...!",{
+          className:"bg-[#1a2c34]"
+        })
+      });
     // console.log(formData.email);
     setFormData({
       enrollmentNumber: "",
@@ -42,19 +52,6 @@ const Login = () => {
       password: "",
     });
   };
-  const checkLoggedIn = async () => {
-    await axios
-      .get("api/api/v1/user/get-current-user")
-      .then((res) => {
-        setIsLoggedIn(res.data.data.user.isLoggedIn);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-  useEffect(() => {
-    checkLoggedIn();
-  }, []);
 
   return (
     <div className="flex items-center justify-center z-0">
@@ -71,6 +68,7 @@ const Login = () => {
               type="text"
               name="mobileNo"
               placeholder="Mobile Number"
+              inputMode="tel"
               className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-orange-600"
               onChange={handleChange}
               value={formData.mobileNo}
@@ -92,6 +90,7 @@ const Login = () => {
           <div className="flex justify-center">
             <button
               type="submit"
+              onClick={handleLoginButton}
               className="px-6 py-2 mt-4 text-white bg-orange-400 rounded-lg hover:bg-orange-500  shadow hover:shadow-lg font-medium transition transform hover:-translate-y-0.5"
             >
               LogIn

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -31,9 +32,11 @@ const Register = () => {
        age:formData.age
     }).then(()=>{
         Navigate(`/login`)
+        toast.success("Your Account is Registered successfully")
       })
     .catch((error)=>{
       console.log(error)
+      toast.error("Check Your credential Properly...!")
     })
     setFormData({
       email: "",
@@ -58,6 +61,7 @@ const Register = () => {
             <input
               type="tel"
               name="mobileNo"
+              inputMode="tel"
               placeholder="Mobile Number"
               className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-orange-600"
               onChange={handleChange}
@@ -85,6 +89,7 @@ const Register = () => {
               type="email"
               name="email"
               placeholder="Email"
+              inputMode="email"
               className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-orange-600"
               onChange={handleChange}
               value={formData.email}
@@ -98,6 +103,7 @@ const Register = () => {
               type="text"
               name="enrollmentNo"
               placeholder="Enrollment Number"
+              inputMode="numeric"
               className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-orange-600"
               onChange={handleChange}
               value={formData.enrollmentNumber}
@@ -110,6 +116,7 @@ const Register = () => {
             <input
               type="text"
               name="age"
+              inputMode="numeric"
               placeholder="Age"
               className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-orange-600"
               onChange={handleChange}

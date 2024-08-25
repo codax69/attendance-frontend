@@ -11,6 +11,7 @@ import { IoInformationCircle } from "react-icons/io5";
 import Button from "./Button.jsx";
 import { AuthContext } from "../context/AuthContext.jsx";
 import { useContext } from "react";
+import { toast } from "react-toastify";
 
 const Navbar = () => {
   const [inputValue, setInputValue] = useState("");
@@ -45,8 +46,9 @@ const Navbar = () => {
   };
   const handleLogOut = async () => {
     try {
-      const response = await axios.get("/api/api/v1/user/logout");
+       await axios.get("/api/api/v1/user/logout");
       setIsLoggedIn(!isLoggedIn)
+      toast.success("Your Account Logout Successfully.")
     } catch (error) {
       console.error("Logout failed", error);
     }
