@@ -120,7 +120,7 @@ const Qr = () => {
        toast.success("Your Attendance is Registered.")
     } catch (error) {
       console.error("Error sending data to Google Sheets:", error);
-      toast.error("Something Want Wrong During Registered Attendance..!")
+      // toast.error("Something Want Wrong During Registered Attendance..!")
     }
   };
 
