@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { useContext } from "react";
@@ -11,6 +11,19 @@ const Login = () => {
     mobileNo: "",
     password: "",
   });
+  const checkLoggedIn = async () => {
+    await axios
+      .get("api/api/v1/user/get-current-user")
+      .then((res) => {
+        setIsLoggedIn(res.data.data.user.isLoggedIn);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  useEffect(() => {
+    checkLoggedIn();
+  }, []);
   const handleLoginButton = () => {
     console.log("first");
   };
@@ -52,6 +65,7 @@ const Login = () => {
       password: "",
     });
   };
+
 
   return (
     <div className="flex items-center justify-center z-0">

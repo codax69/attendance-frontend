@@ -6,26 +6,13 @@ import Profile from './components/Profile.jsx';
 import Home from './components/Home.jsx';
 import Qr from './components/Qr.jsx';
 import { AuthContext } from './context/AuthContext.jsx';
-import { useContext, useEffect } from 'react';
-import axios from 'axios';
+import { useContext,} from 'react';
 
 
 function App() {
-  const {isLoggedIn,setIsLoggedIn} = useContext(AuthContext)
+  const {isLoggedIn} = useContext(AuthContext)
   console.log(isLoggedIn)
-  const checkLoggedIn = async () => {
-    await axios
-      .get("api/api/v1/user/get-current-user")
-      .then((res) => {
-        setIsLoggedIn(res.data.data.user.isLoggedIn);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-  useEffect(() => {
-    checkLoggedIn();
-  }, []);
+  
   return (
     
       <Routes>
