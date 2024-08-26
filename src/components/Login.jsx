@@ -1,4 +1,4 @@
-import { useState,useEffect } from "react";
+import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { useContext } from "react";
@@ -6,28 +6,14 @@ import axios from "axios";
 import { toast } from "react-toastify";
 const Login = () => {
   const { setIsLoggedIn } = useContext(AuthContext);
+  const Navigate = useNavigate();
   const [formData, setFormData] = useState({
     enrollmentNo: "",
     mobileNo: "",
     password: "",
   });
-  const checkLoggedIn = async () => {
-    await axios
-      .get("api/api/v1/user/get-current-user")
-      .then((res) => {
-        setIsLoggedIn(res.data.data.user.isLoggedIn);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-  useEffect(() => {
-    checkLoggedIn();
-  }, []);
-  const handleLoginButton = () => {
-    console.log("first");
-  };
-  const Navigate = useNavigate();
+  
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({
@@ -46,10 +32,11 @@ const Login = () => {
       })
       .then((response) => {
         const loggedIn = response.data.data.loggedInUser.isLoggedIn;
+        console.log(response.data.data.loggedInUser.isLoggedIn)
         if (loggedIn) {
-          setIsLoggedIn(loggedIn);
           Navigate("/");
           toast.success("Login successfully");
+          setIsLoggedIn(loggedIn);
         }
       })
       .catch((error) => {
@@ -104,7 +91,6 @@ const Login = () => {
           <div className="flex justify-center">
             <button
               type="submit"
-              onClick={handleLoginButton}
               className="px-6 py-2 mt-4 text-white bg-orange-400 rounded-lg hover:bg-orange-500  shadow hover:shadow-lg font-medium transition transform hover:-translate-y-0.5"
             >
               LogIn
