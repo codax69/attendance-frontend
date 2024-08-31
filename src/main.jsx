@@ -7,9 +7,11 @@ import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer, Bounce } from "react-toastify";
+import { ContextProvider } from "./context/ContextApi.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
+    <ContextProvider>
     <AuthProvider>
       <BrowserRouter>
         <Navbar />
@@ -29,5 +31,6 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         />
       </BrowserRouter>
     </AuthProvider>
+    </ContextProvider>
   </React.StrictMode>
 );

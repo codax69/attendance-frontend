@@ -4,7 +4,10 @@ import { AuthContext } from "../context/AuthContext";
 import { useContext } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { ContextApi } from "../context/ContextApi";
+import { InfinitySpin } from "react-loader-spinner";
 const Login = () => {
+  const {loader,setLoader} = useContext(ContextApi)
   const { setIsLoggedIn } = useContext(AuthContext);
   const Navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -23,6 +26,7 @@ const Login = () => {
   };
 
   const handleSubmit = (e) => {
+    setLoader(true)
     e.preventDefault();
     axios
       .post("/api/api/v1/user/login", {
@@ -34,6 +38,7 @@ const Login = () => {
         const loggedIn = response.data.data.loggedInUser.isLoggedIn;
         console.log(response.data.data.loggedInUser.isLoggedIn)
         if (loggedIn) {
+          setLoader(false)
           Navigate("/");
           toast.success("Login successfully");
           setIsLoggedIn(loggedIn);
@@ -41,6 +46,7 @@ const Login = () => {
       })
       .catch((error) => {
         console.log(error);
+        setLoader(false)
         toast.error("Check Your Mobile Number and Password...!",{
           className:"bg-[#1a2c34]"
         })
@@ -89,12 +95,22 @@ const Login = () => {
             />
           </div>
           <div className="flex justify-center">
-            <button
-              type="submit"
-              className="px-6 py-2 mt-4 text-white bg-orange-400 rounded-lg hover:bg-orange-500  shadow hover:shadow-lg font-medium transition transform hover:-translate-y-0.5"
-            >
-              LogIn
-            </button>
+          <button
+  type="submit"
+  className="px-6 py-2 mt-4 text-white flex items-center justify-center bg-orange-400 rounded-lg hover:bg-orange-500 shadow hover:shadow-lg font-medium transition transform hover:-translate-y-0.5"
+>
+  {loader ? (
+      <InfinitySpin
+        visible={true}
+        width="50"
+        color="#fff"
+        ariaLabel="infinity-spin-loading"
+      />
+    
+  ) : (
+    "Login"   )}
+</button>
+
           </div>
           <p className="text-center pt-2 ">
             If you don’t have an account?.

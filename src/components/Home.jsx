@@ -1,27 +1,50 @@
-import axios from "axios";
-import { useEffect } from "react";
-import { useState } from "react";
-import { NavLink } from "react-router-dom";
-import { IoInformationCircle } from "react-icons/io5";
-
+// import axios from "axios";
+// import { useEffect } from "react";
+// import { useState } from "react";
+// import { NavLink } from "react-router-dom";
+// import { IoInformationCircle } from "react-icons/io5";
+// import { useContext } from "react";
+// import { ContextApi } from "../context/ContextApi.jsx";
+// import { InfinitySpin } from "react-loader-spinner";
 const Home = () => {
-  const [UserData, setUserData] = useState({});
+  // const { loader, setLoader } = useContext(ContextApi);
+  // const [UserData, setUserData] = useState({});
 
-  const fetchUserData = async () => {
-    try {
-      const response = await axios.get("/api/api/v1/user/get-current-user");
-      setUserData(response.data.data.user);
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
+  // const fetchUserData = async () => {
+  //   try {
+  //     setLoader(true);
+  //     const response = await axios.get("/api/api/v1/user/get-current-user");
+  //     setUserData(response.data.data.user);
+  //     setLoader(false);
+  //   } catch (error) {
+  //     console.log(error.message);
+  //     setLoader(false);
+  //   }
+  // };
 
-  useEffect(() => {
-    fetchUserData();
-  }, []);
+  // useEffect(() => {
+  //   fetchUserData();
+  // }, []);
 
   return (
     <>
+      <div className="lg:w-1/2 w-4/5 lg:h-80 h-[22rem] overflow-scroll lg:overflow-hidden mx-auto mt-6 bg-white rounded-xl shadow-sm shadow-black p-4">
+        <h1 className="text-lg">
+          <b>Dear Users,</b>
+          <br /> We would like to inform you that we have scheduled a server
+          maintenance . During this period, our website and services will be
+          temporarily unavailable. <br /> <b>Reason for Maintenance:</b> This maintenance is
+          essential to ensure the continued performance, reliability, and
+          security of our systems.
+        </h1>
+      </div>
+
+      {/* {loader? <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"> <InfinitySpin
+    visible={true}
+    width="400"
+    color="#f97316"
+    ariaLabel="infinity-spin-loading"
+    /></div>:
       <div className="h-auto">
         <div className="lg:max-w-7xl mx-auto mt-16 lg:mt-0">
           <div className="lg:w-1/2 w-4/5 p-6 h-72 overflow-hidden mx-auto mt-6 bg-white rounded-xl shadow-sm shadow-black text-center">
@@ -69,7 +92,7 @@ const Home = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div>} */}
     </>
   );
 };
