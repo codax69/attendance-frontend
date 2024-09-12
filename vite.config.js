@@ -6,14 +6,14 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "http://localhost:3000/",
+        target: "https://attendance-app-1.onrender.com/",
         changeOrigin: true,
         rewrite:(path)=>path.replace(/^\/api/,"/api")
       },
       "/macros": {
         target: "https://script.google.com/",
         changeOrigin: true,
-        rewrite:(path)=>path.replace(/^\/macros/,"/macros")
+        rewrite:(path)=>path.replace(/^\/macros/,"/api")
 
       },
       "/geo": {
