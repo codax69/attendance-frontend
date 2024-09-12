@@ -29,7 +29,7 @@ const Login = () => {
     setLoader(true)
     e.preventDefault();
     axios
-      .post("/api/api/v1/user/login", {
+      .post("/api/v1/user/login", {
         mobileNo: formData.mobileNo,
         enrollmentNo: formData.enrollmentNo,
         password: formData.password,

@@ -38,7 +38,7 @@ const Navbar = () => {
   const handleUserClick = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.get("/api/api/v1/user/get-current-user");
+      const response = await axios.get("/api/v1/user/get-current-user");
       Navigate(`/p/${response.data.data.user.mobileNo}`);
     } catch (error) {
       console.log(error);

@@ -15,7 +15,7 @@ function App() {
   const navigate = useNavigate()
   const checkLoggedIn = async () => {
     try {
-      const res = await axios.get("api/api/v1/user/get-current-user");
+      const res = await axios.get("/api/v1/user/get-current-user");
       console.log(res);
       setIsLoggedIn(res.data.data.user.isLoggedIn);
       navigate("/");
