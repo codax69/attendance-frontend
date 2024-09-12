@@ -8,12 +8,12 @@ export default defineConfig({
       "/api": {
         target: "http://localhost:3000/",
         changeOrigin: true,
-        rewrite:(path)=>path.replace(/^\/api/,"")
+        // rewrite:(path)=>path.replace(/^\/api/,"")
       },
       "/macros": {
         target: "https://script.google.com/",
         changeOrigin: true,
-        rewrite:(path)=>path.replace(/^\/macros/,"")
+        // rewrite:(path)=>path.replace(/^\/macros/,"")
 
       },
       "/geo": {
