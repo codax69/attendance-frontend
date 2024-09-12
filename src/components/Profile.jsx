@@ -10,7 +10,7 @@ const Profile = () => {
   
   const fetchUserData = async () => {
     try {
-    const response =  await axios.get(`/api/api/v1/user/p/${mobileNo}`);
+    const response =  await axios.get(`/api/v1/user/p/${mobileNo}`);
       setUserData(response.data.data)
     } catch (error) {
       setError(error);
