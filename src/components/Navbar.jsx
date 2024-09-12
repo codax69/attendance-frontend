@@ -38,7 +38,7 @@ const Navbar = () => {
   const handleUserClick = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.get("/api/v1/user/get-current-user");
+      const response = await axios.get("/api/api/v1/user/get-current-user");
       Navigate(`/p/${response.data.data.user.mobileNo}`);
     } catch (error) {
       console.log(error);
@@ -46,7 +46,7 @@ const Navbar = () => {
   };
   const handleLogOut = async () => {
     try {
-       await axios.get("/api/v1/user/logout");
+       await axios.get("/api/api/v1/user/logout");
       setIsLoggedIn(!isLoggedIn)
       toast.success("Your Account Logout Successfully.")
     } catch (error) {

@@ -104,7 +104,7 @@ const Qr = () => {
       formData.append("TIME", formattedTime);
        console.log(userData)
       const response = await fetch(
-        "/macros/s/AKfycbw5rUxDU8RFUTo2tYQLr-l9iyBPTuS9DAoSx7q8SonmMRyb8tGD9TnuUBuErEBRkRoi/exec",
+        "/macros/macros/s/AKfycbw5rUxDU8RFUTo2tYQLr-l9iyBPTuS9DAoSx7q8SonmMRyb8tGD9TnuUBuErEBRkRoi/exec",
         {
           method: "POST",
           body: formData,

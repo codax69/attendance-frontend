@@ -13,7 +13,7 @@ const Home = () => {
   const fetchUserData = async () => {
     try {
       setLoader(true);
-      const response = await axios.get("/api/v1/user/get-current-user");
+      const response = await axios.get("/api/api/v1/user/get-current-user");
       setUserData(response.data.data.user);
       setLoader(false);
     } catch (error) {
