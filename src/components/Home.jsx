@@ -1,30 +1,30 @@
-// import axios from "axios";
-// import { useEffect } from "react";
-// import { useState } from "react";
-// import { NavLink } from "react-router-dom";
-// import { IoInformationCircle } from "react-icons/io5";
-// import { useContext } from "react";
-// import { ContextApi } from "../context/ContextApi.jsx";
-// import { InfinitySpin } from "react-loader-spinner";
+import axios from "axios";
+import { useEffect } from "react";
+import { useState } from "react";
+import { NavLink } from "react-router-dom";
+import { IoInformationCircle } from "react-icons/io5";
+import { useContext } from "react";
+import { ContextApi } from "../context/ContextApi.jsx";
+import { InfinitySpin } from "react-loader-spinner";
 const Home = () => {
-  // const { loader, setLoader } = useContext(ContextApi);
-  // const [UserData, setUserData] = useState({});
+  const { loader, setLoader } = useContext(ContextApi);
+  const [UserData, setUserData] = useState({});
 
-  // const fetchUserData = async () => {
-  //   try {
-  //     setLoader(true);
-  //     const response = await axios.get("/api/api/v1/user/get-current-user");
-  //     setUserData(response.data.data.user);
-  //     setLoader(false);
-  //   } catch (error) {
-  //     console.log(error.message);
-  //     setLoader(false);
-  //   }
-  // };
+  const fetchUserData = async () => {
+    try {
+      setLoader(true);
+      const response = await axios.get("/api/api/v1/user/get-current-user");
+      setUserData(response.data.data.user);
+      setLoader(false);
+    } catch (error) {
+      console.log(error.message);
+      setLoader(false);
+    }
+  };
 
-  // useEffect(() => {
-  //   fetchUserData();
-  // }, []);
+  useEffect(() => {
+    fetchUserData();
+  }, []);
 
   return (
     <>
@@ -39,7 +39,7 @@ const Home = () => {
         </h1>
       </div>
 
-      {/* {loader? <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"> <InfinitySpin
+      {loader? <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"> <InfinitySpin
     visible={true}
     width="400"
     color="#f97316"
@@ -92,7 +92,7 @@ const Home = () => {
             </div>
           </div>
         </div>
-      </div>} */}
+      </div>}
     </>
   );
 };
