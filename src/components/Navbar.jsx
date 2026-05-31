@@ -52,9 +52,12 @@ const Navbar = () => {
 
   useEffect(() => {
     const handleUpdate = async () => {
-      if (user) {
+      if (!user) return;
+      try {
         const notifs = await getNotifications();
         setNotifications(notifs);
+      } catch (err) {
+        console.error('Error updating notifications via event:', err);
       }
     };
 
@@ -70,7 +73,6 @@ const Navbar = () => {
       await markNotificationAsRead(id);
       const notifs = await getNotifications();
       setNotifications(notifs);
-      window.dispatchEvent(new Event("notificationsUpdated"));
     } catch (error) {
       console.error("Error marking read:", error);
     }
@@ -83,7 +85,6 @@ const Navbar = () => {
       const notifs = await getNotifications();
       setNotifications(notifs);
       toast.success("All notifications marked as read.");
-      window.dispatchEvent(new Event("notificationsUpdated"));
     } catch (error) {
       console.error("Error marking all read:", error);
     }
@@ -95,7 +96,6 @@ const Navbar = () => {
       await deleteNotification(id);
       const notifs = await getNotifications();
       setNotifications(notifs);
-      window.dispatchEvent(new Event("notificationsUpdated"));
     } catch (error) {
       console.error("Error deleting notification:", error);
     }
@@ -107,7 +107,6 @@ const Navbar = () => {
       await clearAllNotifications();
       setNotifications([]);
       toast.info("Cleared all notifications.");
-      window.dispatchEvent(new Event("notificationsUpdated"));
     } catch (error) {
       console.error("Error clearing all notifications:", error);
     }
@@ -147,7 +146,7 @@ const Navbar = () => {
 
   const handleLogOut = async () => {
     try {
-      await axios.get("/api/api/v1/user/logout");
+      await axios.get("/api/v1/user/logout");
       setIsLoggedIn(false);
       toast.success("Logged out successfully.");
       Navigate("/login");

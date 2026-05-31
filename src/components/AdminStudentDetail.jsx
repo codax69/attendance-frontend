@@ -55,6 +55,7 @@ const AdminStudentDetail = () => {
 
   const handleSaveStatus = async () => {
     if (!selectedDayRecord) return;
+    if (isSavingStatus) return;
     try {
       setIsSavingStatus(true);
       await updateStudentAttendance(

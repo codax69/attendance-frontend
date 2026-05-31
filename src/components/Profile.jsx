@@ -19,8 +19,50 @@ const Profile = () => {
       
       // Fetch dynamic user history to compute statistics
       const logs = await getAttendanceRecordsForUser(mobileNo);
-      const active = logs.length;
-      const present = logs.filter(r => r.status === "PRESENT" || r.status === "LATE").length;
+      // Scope to current month
+      const now = new Date();
+      const currentMonth = now.getMonth();
+      const currentYear = now.getFullYear();
+      const parseAttendanceDate = (value) => {
+        if (!value || typeof value !== "string") return null;
+        const trimmed = value.trim();
+        const isoMatch = trimmed.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+        if (isoMatch) {
+          const date = new Date(`${isoMatch[1]}-${isoMatch[2]}-${isoMatch[3]}T00:00:00Z`);
+          return Number.isNaN(date.getTime()) ? null : date;
+        }
+
+        const slashMatch = trimmed.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+        if (slashMatch) {
+          const [, first, second, year] = slashMatch;
+          const day = parseInt(first, 10);
+          const month = parseInt(second, 10);
+          if (day > 12 && month >= 1 && month <= 12) {
+            const date = new Date(`${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}T00:00:00Z`);
+            return Number.isNaN(date.getTime()) ? null : date;
+          }
+          if (month > 12 && day >= 1 && day <= 12) {
+            const date = new Date(`${year}-${String(day).padStart(2, "0")}-${String(month).padStart(2, "0")}T00:00:00Z`);
+            return Number.isNaN(date.getTime()) ? null : date;
+          }
+          const dmyDate = new Date(`${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}T00:00:00Z`);
+          if (!Number.isNaN(dmyDate.getTime())) return dmyDate;
+          const mdyDate = new Date(`${year}-${String(day).padStart(2, "0")}-${String(month).padStart(2, "0")}T00:00:00Z`);
+          return Number.isNaN(mdyDate.getTime()) ? null : mdyDate;
+        }
+
+        const fallback = new Date(trimmed);
+        return Number.isNaN(fallback.getTime()) ? null : fallback;
+      };
+
+      const monthlyLogs = (logs || []).filter((r) => {
+        const recordDate = parseAttendanceDate(r?.date);
+        if (!recordDate) return false;
+        return recordDate.getMonth() === currentMonth && recordDate.getFullYear() === currentYear;
+      });
+
+      const active = monthlyLogs.filter(l => l.status !== "LEAVE").length;
+      const present = monthlyLogs.filter(r => r.status === "PRESENT" || r.status === "LATE").length;
       const percentage = active > 0 ? Math.round((present / active) * 100) : 100;
       
       setStats({ active, present, percentage });

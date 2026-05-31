@@ -22,6 +22,7 @@ const AttendanceHistory = () => {
   
   // Detail Modal/Card state
   const [selectedDayRecord, setSelectedDayRecord] = useState(null);
+  const [error, setError] = useState(false);
 
   const fetchUserData = async () => {
     try {
@@ -37,6 +38,7 @@ const AttendanceHistory = () => {
       setLoader(false);
     } catch (error) {
       console.error("Error fetching user or attendance data:", error);
+      setError(true);
       setLoader(false);
     }
   };
@@ -113,12 +115,13 @@ const AttendanceHistory = () => {
   });
 
   // Calculate total class days (non-Sundays) for the selected month up to today (if current month) or up to end of month (if past)
-  const todayObj = new Date();
-  const isCurrentMonth = todayObj.getFullYear() === year && todayObj.getMonth() === month;
-  const isPastMonth = new Date(year, month, 1) < new Date(todayObj.getFullYear(), todayObj.getMonth(), 1);
-  
-  const endDayForStats = isCurrentMonth 
-    ? todayObj.getDate() 
+  const todayMidnight = new Date();
+  todayMidnight.setHours(0, 0, 0, 0);
+  const isCurrentMonth = todayMidnight.getFullYear() === year && todayMidnight.getMonth() === month;
+  const isPastMonth = new Date(year, month, 1) < new Date(todayMidnight.getFullYear(), todayMidnight.getMonth(), 1);
+
+  const endDayForStats = isCurrentMonth
+    ? todayMidnight.getDate()
     : (isPastMonth ? daysInMonth : 0);
 
   let totalClassDays = 0;
@@ -146,7 +149,7 @@ const AttendanceHistory = () => {
   for (let d = 1; d <= daysInMonth; d++) {
     const dateObj = new Date(year, month, d);
     const isSunday = dateObj.getDay() === 0;
-    const isFuture = dateObj > new Date(); // Compare with current date/time
+    const isFuture = dateObj >= todayMidnight; // Compare with midnight-zeroed today
     
     if (isSunday || isFuture) continue;
 
@@ -188,6 +191,22 @@ const AttendanceHistory = () => {
     return matchesSearch && log.status === statusFilter;
   });
 
+  if (error) {
+    return (
+      <div className="fixed inset-0 bg-dark-bg/60 backdrop-blur-xs flex items-center justify-center z-50">
+        <div className="flex flex-col items-center">
+          <p className="text-rose-400 text-sm font-semibold mb-3">Failed to load attendance data.</p>
+          <button
+            onClick={() => { setError(false); fetchUserData(); }}
+            className="px-4 py-2 text-sm rounded-xl bg-white/[0.04] border border-white/[0.08] text-white hover:bg-white/[0.06]"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (loader || !userData) {
     return (
       <div className="fixed inset-0 bg-dark-bg/60 backdrop-blur-xs flex items-center justify-center z-50">
@@ -210,7 +229,7 @@ const AttendanceHistory = () => {
     const record = getRecordForDate(day);
     const dateObj = new Date(year, month, day);
     const isSunday = dateObj.getDay() === 0;
-    const isFuture = dateObj > new Date();
+    const isFuture = dateObj >= todayMidnight;
 
     let cellClass = "bg-white/[0.02] border-white/[0.05] hover:border-white/[0.12]";
     let textClass = "text-gray-300";
@@ -527,7 +546,7 @@ const AttendanceHistory = () => {
                     </div>
 
                     <div className="flex items-center gap-1.5 text-[10px] text-emerald-400 font-semibold mt-4">
-                      <MdCloudDone size={14} /> Synchronized with Google Sheets
+                      <MdCloudDone size={14} /> Synced with MongoDB
                     </div>
                   </>
                 )}

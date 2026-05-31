@@ -105,7 +105,7 @@ const Home = () => {
                     Check Daily Attendance
                   </button>
                 </NavLink>
-                <NavLink to="/history" className="w-full">
+                <NavLink to="/history?view=monthly" className="w-full">
                   <button className="w-full py-2.5 px-4 text-gray-300 hover:text-white font-semibold rounded-xl bg-white/[0.02] hover:bg-white/[0.04] border border-white/[0.07] active:scale-98 transition transform hover:-translate-y-0.5 text-sm">
                     Check Monthly Attendance
                   </button>

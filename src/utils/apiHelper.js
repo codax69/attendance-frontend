@@ -39,6 +39,7 @@ export const getAttendanceRecords = async () => {
 };
 
 export const getAttendanceRecordsForUser = async (mobileNo) => {
+  if (!mobileNo) throw new Error('Invalid mobileNo passed to getAttendanceRecordsForUser');
   try {
     const response = await axios.get(`/api/v1/attendance-history/${mobileNo}`);
     const history = response.data.data.history || [];
@@ -91,6 +92,7 @@ export const addNotification = async (title, message, type = "info") => {
 };
 
 export const markNotificationAsRead = async (id) => {
+  if (!id) throw new Error('Invalid notification id');
   try {
     const response = await axios.patch(`/api/v1/notifications/${id}/read`);
     return mapNotification(response.data.data.notification);
@@ -112,6 +114,7 @@ export const markAllNotificationsAsRead = async () => {
 };
 
 export const deleteNotification = async (id) => {
+  if (!id) throw new Error('Invalid notification id');
   try {
     await axios.delete(`/api/v1/notifications/${id}`);
     return true;
@@ -156,6 +159,7 @@ export const getAdminStudents = async (classFilter = "ALL", search = "") => {
 };
 
 export const getStudentAttendanceById = async (userId) => {
+  if (!userId) throw new Error('Invalid userId passed to getStudentAttendanceById');
   try {
     const response = await axios.get(`/api/v1/admin/students/${userId}/attendance`);
     return response.data.data;
@@ -200,6 +204,7 @@ export const createClass = async (name, code) => {
 };
 
 export const deleteClass = async (id) => {
+  if (!id && id !== 0) throw new Error('Invalid id parameter for deleteClass');
   try {
     await axios.delete(`/api/v1/admin/class/${id}`);
     return true;
@@ -210,6 +215,9 @@ export const deleteClass = async (id) => {
 };
 
 export const updateStudentAttendance = async (userId, date, status, time) => {
+  if (!userId) throw new Error('Missing required parameter: userId');
+  if (!date) throw new Error('Missing required parameter: date');
+  if (!status) throw new Error('Missing required parameter: status');
   try {
     const response = await axios.post("/api/v1/admin/attendance/update", {
       userId,

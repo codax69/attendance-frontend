@@ -6,10 +6,10 @@
   --color-brand-secondary: #8bae66;   /* Leaf Green */
   --color-brand-accent: #ebd5ab;      /* Cream */
   
-  --color-brand-orange: #628141;
-  --color-brand-rose: #8bae66;
-  --color-brand-indigo: #ebd5ab;
-  --color-brand-violet: #ebd5ab;
+  --color-brand-orange: #f97316; /* orange */
+  --color-brand-rose: #fb7185;   /* rose/pink */
+  --color-brand-indigo: #6366f1; /* indigo */
+  --color-brand-violet: #7c3aed; /* violet */
   
   --color-dark-bg: #1b211a;
   --color-dark-surface: rgba(27, 33, 26, 0.45);

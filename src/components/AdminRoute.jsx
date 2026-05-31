@@ -23,6 +23,7 @@ const AdminRoute = () => {
     };
 
     if (isLoggedIn) {
+      setLoading(true);
       checkAdmin();
     } else {
       setLoading(false);

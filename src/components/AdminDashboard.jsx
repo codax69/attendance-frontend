@@ -93,8 +93,16 @@ const AdminDashboard = () => {
     const timer = setTimeout(() => {
       const fetchStudents = async () => {
         try {
+          // If user selected a specific class but classesList isn't loaded yet,
+          // skip this fetch and wait for classes to be populated to avoid wrong params.
+          if (classFilter !== "ALL" && classesList.length === 0) return;
+
           const params = {};
-          if (classFilter !== "ALL") params.class = getClassNameFromCode(classFilter);
+          if (classFilter !== "ALL") {
+            // Only resolve full class name when classesList is available
+            const cls = classesList.find(c => c.code === classFilter);
+            params.class = cls ? getClassNameFromCode(classFilter) : classFilter;
+          }
           if (searchTerm.trim()) params.search = searchTerm.trim();
           const res = await axios.get("/api/v1/admin/students", { params });
           const sorted = (res.data?.data?.students || []).sort((a, b) =>
@@ -182,10 +190,25 @@ const AdminDashboard = () => {
 
     try {
       setLoading(true);
-      await Promise.all(
+      const results = await Promise.allSettled(
         unmarkedStudents.map(s => updateStudentAttendance(s._id, todayStr, "ABSENT"))
       );
-      toast.success(`Successfully marked ${unmarkedStudents.length} students as ABSENT`);
+
+      let successCount = 0;
+      const failed = [];
+      results.forEach((res, idx) => {
+        if (res.status === 'fulfilled') successCount++;
+        else failed.push({ student: unmarkedStudents[idx], reason: res.reason });
+      });
+
+      if (successCount > 0) {
+        toast.success(`Marked ${successCount} / ${unmarkedStudents.length} students as ABSENT`);
+      }
+      if (failed.length > 0) {
+        console.error('Failed to mark some students as ABSENT:', failed);
+        toast.error(`${failed.length} records failed to update. Check console for details.`);
+      }
+
       setRefreshTrigger(prev => prev + 1);
     } catch (error) {
       console.error(error);

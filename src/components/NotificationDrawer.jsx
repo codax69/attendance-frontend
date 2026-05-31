@@ -150,7 +150,7 @@ const NotificationDrawer = ({
                       e.stopPropagation(); // Prevent trigger mark read
                       onDelete(notif.id);
                     }}
-                    className="absolute bottom-3 right-3 p-1.5 rounded-lg text-gray-500 hover:text-rose-400 hover:bg-rose-500/10 opacity-0 group-hover:opacity-100 transition-all duration-200"
+                    className="absolute bottom-3 right-3 p-1.5 rounded-lg text-gray-500 hover:text-rose-400 hover:bg-rose-500/10 opacity-0 group-hover:opacity-100 focus:opacity-100 focus-visible:opacity-100 group-focus-within:opacity-100 transition-all duration-200 outline-none focus:ring-2 focus:ring-brand-secondary/30"
                     title="Delete notification"
                   >
                     <MdDelete size={14} />

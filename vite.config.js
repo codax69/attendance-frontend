@@ -11,9 +11,11 @@ export default defineConfig({
       },
       "/macros": {
         target: "https://script.google.com/",
+        changeOrigin: true,
       },
       "/geo": {
         target: "http://api.openweathermap.org/",
+        changeOrigin: true,
       },
     },
   },

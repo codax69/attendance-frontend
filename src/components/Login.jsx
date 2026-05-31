@@ -1,7 +1,7 @@
 import { useState, useContext } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import axiosInstance from "axios";
+import axios from "axios";
 import { toast } from "react-toastify";
 import { ContextApi } from "../context/ContextApi";
 import { InfinitySpin } from "react-loader-spinner";
@@ -11,7 +11,6 @@ const Login = () => {
   const { setIsLoggedIn } = useContext(AuthContext);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    enrollmentNo: "",
     mobileNo: "",
     password: "",
   });
@@ -27,10 +26,9 @@ const Login = () => {
   const handleSubmit = (e) => {
     setLoader(true);
     e.preventDefault();
-    axiosInstance
-      .post("/api/api/v1/user/login", {
+    axios
+      .post("/api/v1/user/login", {
         mobileNo: formData.mobileNo,
-        enrollmentNo: formData.enrollmentNo,
         password: formData.password,
       })
       .then((response) => {
@@ -49,7 +47,6 @@ const Login = () => {
       });
 
     setFormData({
-      enrollmentNo: "",
       mobileNo: "",
       password: "",
     });

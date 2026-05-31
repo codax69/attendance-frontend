@@ -14,9 +14,10 @@ const Register = () => {
     age: "",
     class: "Information Technology (IT)",
     rollNo: "",
-    role: "student",
-    adminCode: ""
+    role: "student"
   });
+  const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState(null);
   
   const [classesList, setClassesList] = useState([]);
   const navigate = useNavigate();
@@ -41,6 +42,7 @@ const Register = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    setFormError(null);
     setFormData((prevState) => ({
       ...prevState,
       [name]: value,
@@ -49,11 +51,14 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (formData.role === "admin" && formData.adminCode !== "admin123") {
-      toast.error("Invalid Teacher Passcode!");
+    if (submitting) return;
+    if (formData.role === "admin") {
+      setFormError("Teacher accounts must be created by an administrator. Please contact your institute.");
       return;
     }
     try {
+      setFormError(null);
+      setSubmitting(true);
       await axios.post("/api/v1/user/register", {
         email: formData.email,
         password: formData.password,
@@ -70,6 +75,8 @@ const Register = () => {
     } catch (error) {
       console.log(error);
       toast.error("Registration failed. Please check your credentials.");
+    } finally {
+      setSubmitting(false);
     }
     
     setFormData({
@@ -81,8 +88,7 @@ const Register = () => {
       age: "",
       class: "Information Technology (IT)",
       rollNo: "",
-      role: "student",
-      adminCode: ""
+      role: "student"
     });
   };
 
@@ -183,19 +189,8 @@ const Register = () => {
             </div>
 
             {formData.role === "admin" ? (
-              <div>
-                <label className="text-xs font-semibold text-gray-400 tracking-wider uppercase" htmlFor="adminCode">
-                  Teacher Passcode
-                </label>
-                <input
-                  type="password"
-                  name="adminCode"
-                  placeholder="Enter Passcode (admin123)"
-                  className="w-full px-4 py-2.5 mt-1.5 border border-white/[0.08] bg-white/[0.02] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-brand-orange/50 focus:ring-1 focus:ring-brand-orange/20 transition-all duration-200 text-sm font-medium"
-                  onChange={handleChange}
-                  value={formData.adminCode}
-                  required
-                />
+              <div className="p-3 bg-white/[0.01] border border-white/[0.04] rounded-xl text-[11px] text-gray-400">
+                Teacher accounts must be issued by the institute. Please contact an administrator to create a Teacher account.
               </div>
             ) : (
               <div>
@@ -250,6 +245,9 @@ const Register = () => {
             )}
           </div>
 
+          {formError && (
+            <p className="text-sm text-rose-300 font-medium">{formError}</p>
+          )}
           {formData.role === "student" && (
             <div className="grid grid-cols-1 gap-4">
               <div>
@@ -289,9 +287,11 @@ const Register = () => {
 
           <button
             type="submit"
-            className="w-full py-3 mt-6 text-[#1b211a] font-bold rounded-xl bg-gradient-to-r from-brand-orange to-brand-rose hover:from-[#516c35] hover:to-[#7ba156] shadow-md shadow-brand-orange/10 hover:shadow-brand-orange/20 active:scale-98 transition transform hover:-translate-y-0.5 flex items-center justify-center min-h-[46px]"
+            disabled={submitting || formData.role === "admin"}
+            aria-busy={submitting}
+            className={`w-full py-3 mt-6 text-[#1b211a] font-bold rounded-xl bg-gradient-to-r from-brand-orange to-brand-rose hover:from-[#516c35] hover:to-[#7ba156] shadow-md shadow-brand-orange/10 hover:shadow-brand-orange/20 active:scale-98 transition transform hover:-translate-y-0.5 flex items-center justify-center min-h-[46px] ${submitting || formData.role === "admin" ? 'opacity-60 pointer-events-none' : ''}`}
           >
-            Register
+            {submitting ? 'Registering...' : 'Register'}
           </button>
 
           <p className="text-center text-sm text-gray-400 pt-3">
