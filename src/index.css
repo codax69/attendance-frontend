@@ -1,19 +1,112 @@
-@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap');
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap');
+@import "tailwindcss";
 
-body{
-    background: #1a2c34;
-    font-family: "Lato";
+@theme {
+  --color-brand-primary: #628141;     /* Forest Green */
+  --color-brand-secondary: #8bae66;   /* Leaf Green */
+  --color-brand-accent: #ebd5ab;      /* Cream */
+  
+  --color-brand-orange: #628141;
+  --color-brand-rose: #8bae66;
+  --color-brand-indigo: #ebd5ab;
+  --color-brand-violet: #ebd5ab;
+  
+  --color-dark-bg: #1b211a;
+  --color-dark-surface: rgba(27, 33, 26, 0.45);
+  --color-dark-card: rgba(27, 33, 26, 0.75);
+  --color-glass-border: rgba(255, 255, 255, 0.08);
+  --color-glass-border-focus: rgba(139, 174, 102, 0.35);
+  
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
+  --font-display: 'Outfit', sans-serif;
 }
-#render__scan_region img{
-    display: none;
+
+body {
+  background-color: #1b211a;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(98, 129, 65, 0.22) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(139, 174, 102, 0.18) 0px, transparent 50%),
+    radial-gradient(at 50% 100%, rgba(235, 213, 171, 0.12) 0px, transparent 50%);
+  background-attachment: fixed;
+  font-family: var(--font-sans);
+  color: #ffffff;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
+
+/* Glassmorphism helpers */
+.glass-panel {
+  background: rgba(27, 33, 26, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
+}
+
+.glass-panel-glow {
+  box-shadow: 
+    0 8px 32px 0 rgba(0, 0, 0, 0.45),
+    0 0 15px 0 rgba(139, 174, 102, 0.15);
+}
+
+/* Custom Scrollbars */
 .no-scrollbar::-webkit-scrollbar {
-    display: none;
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none; 
+  scrollbar-width: none; 
+}
+
+/* QR Scanner region overrides */
+#render__scan_region img {
+  display: none;
+}
+
+/* High-tech scanner animations */
+@keyframes scan {
+  0%, 100% {
+    top: 5%;
   }
-  .no-scrollbar {
-    -ms-overflow-style: none; 
-    scrollbar-width: none; 
+  50% {
+    top: 95%;
   }
+}
+
+.scanner-laser {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--color-brand-secondary), transparent);
+  box-shadow: 0 0 8px var(--color-brand-secondary);
+  animation: scan 3s ease-in-out infinite;
+}
+
+/* React Toastify overrides to match glassmorphism dark theme */
+.Toastify__toast {
+  background: rgba(27, 33, 26, 0.85) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 12px !important;
+  color: #ffffff !important;
+  font-family: var(--font-sans) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+}
+
+.Toastify__toast-theme--dark {
+  background: rgba(27, 33, 26, 0.85) !important;
+}
+
+.Toastify__toast--success {
+  border-left: 4px solid var(--color-brand-secondary) !important;
+}
+
+.Toastify__toast--error {
+  border-left: 4px solid #f43f5e !important;
+}
+
+.Toastify__progress-bar {
+  background: linear-gradient(90deg, var(--color-brand-primary), var(--color-brand-secondary)) !important;
+}

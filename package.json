@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tailwindcss/vite": "^4.3.0",
     "@yudiel/react-qr-scanner": "^2.0.4",
     "axios": "^0.27.2",
     "axois": "^0.0.1-security",
@@ -22,19 +23,17 @@
     "react-loader-spinner": "^6.1.6",
     "react-router": "^6.23.1",
     "react-router-dom": "^6.23.1",
-    "react-toastify": "^10.0.5"
+    "react-toastify": "^10.0.5",
+    "tailwindcss": "^4.3.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
     "@vitejs/plugin-react": "^4.2.1",
-    "autoprefixer": "^10.4.19",
     "eslint": "^8.57.0",
     "eslint-plugin-react": "^7.34.1",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
-    "postcss": "^8.4.38",
-    "tailwindcss": "^3.4.7",
-    "vite": "^5.2.0"
+    "vite": "^8.0.14"
   }
 }
