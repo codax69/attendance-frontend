@@ -34,7 +34,7 @@ const AdminRoute = () => {
     return (
       <div className="fixed inset-0 bg-dark-bg/60 backdrop-blur-xs flex items-center justify-center z-50">
         <div className="flex flex-col items-center">
-          <InfinitySpin visible={true} width="200" color="#8bae66" ariaLabel="infinity-spin-loading" />
+          <InfinitySpin visible={true} width="200" color="#2F2FE4" ariaLabel="infinity-spin-loading" />
           <p className="text-white text-sm font-semibold mt-2 animate-pulse">Verifying admin access...</p>
         </div>
       </div>
@@ -42,7 +42,11 @@ const AdminRoute = () => {
   }
 
   if (!isLoggedIn) return <Navigate to="/login" />;
-  if (role !== "admin") return <Navigate to="/" />;
+  
+  // Allow superuser and admin roles
+  if (role !== "superuser" && role !== "admin") {
+    return <Navigate to="/" />;
+  }
 
   return <Outlet />;
 };

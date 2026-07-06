@@ -5,9 +5,10 @@ const mapAttendanceRecord = (rec) => {
   if (!rec) return null;
   return {
     id: rec._id,
-    date: rec.presentDays, // Maps presentDays to date
-    time: rec.activeDays,   // Maps activeDays to time
-    status: rec.monthlyAttendance, // Maps monthlyAttendance to status
+    date: rec.presentDays || rec.date, // Maps presentDays/date
+    time: rec.activeDays || rec.checkIn,   // Maps activeDays/checkIn
+    checkOut: rec.checkOut || "",
+    status: rec.monthlyAttendance || rec.status, // Maps status
     qrData: rec.googleSheetLink,   // Maps googleSheetLink to qrData
     synced: true
   };
@@ -50,17 +51,43 @@ export const getAttendanceRecordsForUser = async (mobileNo) => {
   }
 };
 
-export const addAttendanceRecord = async (dateStr, timeStr, qrData, status = "PRESENT") => {
+export async function refreshToken() {
+  try {
+    await axios.post('/api/v1/user/refresh-token');
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export const addAttendanceRecord = async (dateStr, timeStr, qrData, status = "PRESENT", session = "", organizationId = "", departmentId = "", extraParams = {}) => {
   try {
     const response = await axios.post("/api/v1/attendance", {
       presentDays: dateStr,
       activeDays: timeStr,
       monthlyAttendance: status,
-      googleSheetLink: qrData
+      googleSheetLink: qrData,
+      session,
+      organizationId,
+      departmentId,
+      ...extraParams
     });
     return mapAttendanceRecord(response.data.data.attendance);
   } catch (error) {
     console.error("Error saving attendance record to API:", error);
+    throw error;
+  }
+};
+
+export const attendanceCheckout = async (dateStr, timeStr) => {
+  try {
+    const response = await axios.post("/api/v1/attendance/checkout", {
+      date: dateStr,
+      checkOut: timeStr
+    });
+    return mapAttendanceRecord(response.data.data.attendance);
+  } catch (error) {
+    console.error("Error checking out user:", error);
     throw error;
   }
 };
@@ -148,7 +175,7 @@ export const getAdminDashboard = async () => {
 export const getAdminStudents = async (classFilter = "ALL", search = "") => {
   try {
     const params = {};
-    if (classFilter && classFilter !== "ALL") params.class = classFilter;
+    if (classFilter && classFilter !== "ALL") params.department = classFilter;
     if (search) params.search = search;
     const response = await axios.get("/api/v1/admin/students", { params });
     return response.data.data;
@@ -172,7 +199,7 @@ export const getStudentAttendanceById = async (userId) => {
 export const getAdminClassReport = async (classFilter = "ALL", month, year) => {
   try {
     const params = {};
-    if (classFilter && classFilter !== "ALL") params.class = classFilter;
+    if (classFilter && classFilter !== "ALL") params.department = classFilter;
     if (month) params.month = month;
     if (year) params.year = year;
     const response = await axios.get("/api/v1/admin/report", { params });
@@ -228,6 +255,122 @@ export const updateStudentAttendance = async (userId, date, status, time) => {
     return response.data.data;
   } catch (error) {
     console.error("Error updating student attendance:", error);
+    throw error;
+  }
+};
+
+export const getPublicOrganizations = async () => {
+  try {
+    const response = await axios.get("/api/v1/public/organizations");
+    return response.data.data.organizations || [];
+  } catch (error) {
+    console.error("Error fetching public organizations:", error);
+    return [];
+  }
+};
+
+export const updateAccountDetails = async (details) => {
+  try {
+    const response = await axios.patch("/api/v1/user/update-account-details", details);
+    return response.data.data.user;
+  } catch (error) {
+    console.error("Error updating account details:", error);
+    throw error;
+  }
+};
+
+// SaaS-Specific Wrappers
+export const registerOrganization = async (orgData) => {
+  try {
+    const response = await axios.post("/api/v1/organizations/register", orgData);
+    return response.data.data;
+  } catch (error) {
+    console.error("Error registering organization:", error);
+    throw error;
+  }
+};
+
+export const getDepartments = async () => {
+  try {
+    const response = await axios.get("/api/v1/departments");
+    return response.data.data.departments || [];
+  } catch (error) {
+    console.error("Error fetching departments:", error);
+    return [];
+  }
+};
+
+export const createDepartment = async (name, code, description = "") => {
+  try {
+    const response = await axios.post("/api/v1/departments", { name, code, description });
+    return response.data.data.department;
+  } catch (error) {
+    console.error("Error creating department:", error);
+    throw error;
+  }
+};
+
+export const deleteDepartment = async (id) => {
+  try {
+    await axios.delete(`/api/v1/departments/${id}`);
+    return true;
+  } catch (error) {
+    console.error("Error deleting department:", error);
+    throw error;
+  }
+};
+
+export const inviteUser = async (userData) => {
+  try {
+    const response = await axios.post("/api/v1/user/users", userData);
+    return response.data.data.user;
+  } catch (error) {
+    console.error("Error inviting user:", error);
+    throw error;
+  }
+};
+
+export const getUsers = async (role = "", departmentId = "", search = "") => {
+  try {
+    const params = {};
+    if (role) params.role = role;
+    if (departmentId) params.departmentId = departmentId;
+    if (search) params.search = search;
+    const response = await axios.get("/api/v1/user/users", { params });
+    return response.data.data.users || [];
+  } catch (error) {
+    console.error("Error fetching users list:", error);
+    return [];
+  }
+};
+
+export const downloadReport = async (type, params) => {
+  try {
+    const response = await axios.get(`/api/v1/reports/${type}`, {
+      params: { ...params, format: "csv" },
+      responseType: "blob"
+    });
+    // Create local URL and trigger download
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `${type}_report_${new Date().toISOString().slice(0,10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    return true;
+  } catch (error) {
+    console.error(`Error downloading ${type} report:`, error);
+    throw error;
+  }
+};
+
+export const generateQrCode = async (dateCode, expiresIn, departmentId) => {
+  try {
+    const response = await axios.post("/api/v1/attendance/generate-qr", { dateCode, expiresIn, departmentId });
+    return response.data.data.qrPayload;
+  } catch (error) {
+    console.error("Error generating QR payload:", error);
     throw error;
   }
 };

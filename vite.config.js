@@ -7,14 +7,14 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "http://localhost:3000",
+        target: "https://att-web.vegbazar.store/",
       },
       "/macros": {
         target: "https://script.google.com/",
         changeOrigin: true,
       },
       "/geo": {
-        target: "http://api.openweathermap.org/",
+        target: "https://api.openweathermap.org/",
         changeOrigin: true,
       },
     },

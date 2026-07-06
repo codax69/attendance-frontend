@@ -27,11 +27,10 @@ const Qr = () => {
       const data = response.data.data.user;
       setUserData(data);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error fetching user data:", error);
     }
   };
 
-  // Fetch current user on mount
   useEffect(() => {
     FetchDataFromDb();
   }, []);
@@ -42,7 +41,7 @@ const Qr = () => {
       setQRData(scannedValue);
       stopScanner();
     } else {
-      console.log("No result found");
+      console.log("No scan result");
     }
   };
 
@@ -63,35 +62,117 @@ const Qr = () => {
     minute: "numeric",
   });
 
-  const FetchDataFormSheet = async () => {
+  const ProcessAttendanceMark = async () => {
     if (isSubmitting) return;
+
+    let session = "";
+    let orgId = "";
+    let deptId = "";
+    let payload = null;
+
+    if (QRData) {
+      try {
+        // Try decoding as plain JSON first
+        try {
+          payload = JSON.parse(QRData);
+        } catch (e) {
+          // Fallback to base64 decoding (legacy QR format)
+          const decoded = decodeURIComponent(escape(atob(QRData)));
+          payload = JSON.parse(decoded);
+        }
+
+        // Validate SaaS Multi-Tenant boundaries (Phase 6 Department validation)
+        if (payload.organizationId && userData?.organizationId && String(payload.organizationId) !== String(userData.organizationId)) {
+          toast.error("Access Denied: You do not belong to this organization.");
+          setQRData(null);
+          return;
+        }
+
+        if (payload.departmentId && userData?.departmentId && String(payload.departmentId) !== String(userData.departmentId)) {
+          toast.error("Access Denied: You do not belong to this department.");
+          setQRData(null);
+          return;
+        }
+
+        // Legacy Department Code check (if present)
+        if (payload.deptCode && userData?.departmentCode) {
+          if (payload.deptCode.trim().toUpperCase() !== (userData.departmentCode || "").trim().toUpperCase()) {
+            toast.error(`Access Denied: This QR belongs to department "${payload.deptName || payload.deptCode}".`);
+            setQRData(null);
+            return;
+          }
+        }
+
+        // Expiry check
+        if (payload.expiresAt && Date.now() > payload.expiresAt) {
+          toast.error("This QR code has expired.");
+          setQRData(null);
+          return;
+        }
+
+        session = payload.dateCode || payload.session || "";
+        orgId = payload.organizationId || userData?.organizationId || "";
+        deptId = payload.departmentId || userData?.departmentId || "";
+
+      } catch (err) {
+        console.error("QR validation failed:", err);
+        toast.error("Invalid QR Code: Please scan a valid department-locked QR Code.");
+        setQRData(null);
+        return;
+      }
+    } else {
+      toast.error("Invalid QR Code data.");
+      setQRData(null);
+      return;
+    }
+
     setIsSubmitting(true);
     try {
-      const formData = new FormData();
-      formData.append("FULL_NAME", userData.fullname);
-      formData.append("ENROLLMENT_NUMBER", userData.enrollmentNo);
-      formData.append(`${formattedDate}`, "PRESENT");
-      formData.append("QR_DATA", QRData);
-      formData.append("TIME", formattedTime);
-      formData.append("CLASS", userData.class || "Information Technology (IT)");
-      formData.append("ROLL_NUMBER", userData.rollNo || "");
+      // 1. Optional Google Sheets Sync (backward compatibility)
+      try {
+        const formData = new FormData();
+        formData.append("FULL_NAME", userData.fullname);
+        formData.append("ENROLLMENT_NUMBER", userData.enrollmentNo || "N/A");
+        formData.append(`${formattedDate}`, "PRESENT");
+        formData.append("QR_DATA", QRData);
+        formData.append("TIME", formattedTime);
+        formData.append("CLASS", userData.class || userData.departmentName || "General");
+        formData.append("ROLL_NUMBER", userData.rollNo || "");
 
-      const response = await fetch(
-        "/macros/macros/s/AKfycbw5rUxDU8RFUTo2tYQLr-l9iyBPTuS9DAoSx7q8SonmMRyb8tGD9TnuUBuErEBRkRoi/exec",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        await fetch(
+          "/macros/macros/s/AKfycbw5rUxDU8RFUTo2tYQLr-l9iyBPTuS9DAoSx7q8SonmMRyb8tGD9TnuUBuErEBRkRoi/exec",
+          {
+            method: "POST",
+            body: formData,
+            mode: "no-cors" // safe fallback
+          }
+        );
+      } catch (sheetErr) {
+        console.warn("Google Sheets synchronization bypassed/failed:", sheetErr.message);
       }
       
-      const responseBody = await response.json();
-      console.log("Response from Google Sheets:", responseBody);
+      // 2. Save Attendance Locally in express database
+      const extraParams = payload ? {
+        key: payload.key,
+        expiresAt: payload.expiresAt,
+        dateCode: payload.dateCode,
+        departmentCode: payload.departmentCode,
+        departmentName: payload.departmentName,
+        adminName: payload.adminName
+      } : {};
+
+      await addAttendanceRecord(
+        formattedDate, 
+        formattedTime, 
+        QRData, 
+        "PRESENT", 
+        session, 
+        orgId, 
+        deptId,
+        extraParams
+      );
       
-      // Save locally and trigger notifications via Express API
-      await addAttendanceRecord(formattedDate, formattedTime, QRData, "PRESENT");
+      // 3. Post Notification to user feed
       await addNotification(
         "Attendance Marked", 
         `Successfully registered attendance for ${formattedDate} at ${formattedTime}.`, 
@@ -102,29 +183,28 @@ const Qr = () => {
       toast.success("Your Attendance has been successfully registered!");
       navigate("/");
     } catch (error) {
-      console.error("Error sending data to Google Sheets:", error);
-      toast.error("Failed to register attendance. Please try scanning again.");
-      setQRData(null); // Reset to scan again if error
+      console.error("Error registering attendance:", error);
+      const errMsg = error.response?.data?.message || "Failed to register attendance. Please try scanning again.";
+      toast.error(errMsg);
+      setQRData(null);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Only trigger sheets registration when both userData and QRData are ready
   useEffect(() => {
     if (userData && QRData) {
-      FetchDataFormSheet();
+      ProcessAttendanceMark();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userData, QRData]);
 
   return (
     <div className="max-w-md mx-auto px-4 py-12 relative min-h-[calc(100vh-80px)] flex flex-col justify-center">
-      {/* Ambient Background Glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-brand-orange/5 rounded-full blur-3xl pointer-events-none z-0" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-brand-secondary/5 rounded-full blur-3xl pointer-events-none z-0" />
 
       <div className="glass-panel border-white/[0.08] p-6 rounded-2xl relative z-10 hover:border-white/[0.12] transition duration-300 shadow-2xl flex flex-col items-center">
-        <span className="inline-flex px-3 py-1 rounded-full text-xs font-semibold bg-white/[0.05] border border-white/[0.08] text-brand-orange mb-4">
+        <span className="inline-flex px-3 py-1 rounded-full text-xs font-semibold bg-white/[0.05] border border-white/[0.08] text-[#06b6d4] mb-4">
           Camera Scan
         </span>
         <h2 className="text-xl font-bold font-display text-white text-center mb-1">
@@ -132,21 +212,21 @@ const Qr = () => {
         </h2>
         {userData ? (
           <p className="text-gray-400 text-xs text-center mb-6">
-            Marking attendance for <strong className="text-brand-orange">{userData.fullname}</strong>
+            Marking attendance for <strong className="text-brand-secondary">{userData.fullname}</strong>
           </p>
         ) : (
           <p className="text-gray-400 text-xs text-center mb-6">Fetching user details...</p>
         )}
 
         {devices && devices.length > 0 && (
-          <div className="w-full mb-4">
+          <div className="w-full mb-4 text-left">
             <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">
               Select Camera Device
             </label>
             <select
               onChange={(e) => setSelectedDeviceId(e.target.value)}
               value={selectedDeviceId}
-              className="w-full px-3 py-2 text-xs border border-white/[0.08] bg-dark-bg text-gray-200 rounded-xl focus:outline-none focus:border-brand-orange/50 transition cursor-pointer"
+              className="w-full px-3 py-2 text-xs border border-white/[0.08] bg-dark-bg text-gray-200 rounded-xl focus:outline-none focus:border-brand-secondary/50 transition cursor-pointer"
             >
               {devices.map((device) => (
                 <option key={device.deviceId} value={device.deviceId}>
@@ -157,15 +237,13 @@ const Qr = () => {
           </div>
         )}
 
-        {/* Scanning Box Visor */}
-        <div className="w-64 h-64 mx-auto relative rounded-2xl overflow-hidden border-2 border-brand-orange/30 shadow-inner bg-black flex items-center justify-center">
-          {/* Tech visor corners */}
-          <div className="absolute top-2.5 left-2.5 w-4 h-4 border-t-2 border-l-2 border-brand-orange rounded-tl-sm pointer-events-none z-20" />
-          <div className="absolute top-2.5 right-2.5 w-4 h-4 border-t-2 border-r-2 border-brand-orange rounded-tr-sm pointer-events-none z-20" />
-          <div className="absolute bottom-2.5 left-2.5 w-4 h-4 border-b-2 border-l-2 border-brand-orange rounded-bl-sm pointer-events-none z-20" />
-          <div className="absolute bottom-2.5 right-2.5 w-4 h-4 border-b-2 border-r-2 border-brand-orange rounded-br-sm pointer-events-none z-20" />
+        {/* Visor Box */}
+        <div className="w-64 h-64 mx-auto relative rounded-2xl overflow-hidden border-2 border-[#06b6d4]/30 shadow-inner bg-black flex items-center justify-center">
+          <div className="absolute top-2.5 left-2.5 w-4 h-4 border-t-2 border-l-2 border-brand-secondary rounded-tl-sm pointer-events-none z-20" />
+          <div className="absolute top-2.5 right-2.5 w-4 h-4 border-t-2 border-r-2 border-brand-secondary rounded-tr-sm pointer-events-none z-20" />
+          <div className="absolute bottom-2.5 left-2.5 w-4 h-4 border-b-2 border-l-2 border-brand-secondary rounded-bl-sm pointer-events-none z-20" />
+          <div className="absolute bottom-2.5 right-2.5 w-4 h-4 border-b-2 border-r-2 border-brand-secondary rounded-br-sm pointer-events-none z-20" />
 
-          {/* Glowing animated scanner laser */}
           {!QRData && <div className="scanner-laser z-20" />}
 
           <div className="w-full h-full relative z-10">
@@ -189,7 +267,7 @@ const Qr = () => {
               QR Code Captured!
             </p>
             <p className="text-center text-xs text-gray-400 animate-pulse">
-              Syncing attendance sheet, please wait...
+              Syncing attendance logs, please wait...
             </p>
           </div>
         )}
